@@ -98,7 +98,10 @@ export function Inbox() {
             </span>
           )}
         </div>
-        <button className="text-sm text-white/50 hover:text-white transition-colors flex items-center gap-1">
+        <button 
+          className="text-sm transition-colors flex items-center gap-1"
+          style={{ color: "var(--text-muted)" }}
+        >
           View all <ChevronRight className="w-4 h-4" />
         </button>
       </div>
@@ -109,12 +112,11 @@ export function Inbox() {
           <button
             key={f.id}
             onClick={() => setFilter(f.id)}
-            className={cn(
-              "px-3 py-1.5 text-xs font-medium rounded-full transition-colors",
-              filter === f.id
-                ? "bg-white/10 text-white"
-                : "text-white/50 hover:text-white hover:bg-white/5"
-            )}
+            className="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+            style={{ 
+              color: filter === f.id ? "var(--text-primary)" : "var(--text-muted)",
+              fontWeight: filter === f.id ? 600 : 500,
+            }}
           >
             {f.label}
           </button>
@@ -133,12 +135,7 @@ export function Inbox() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ delay: i * 0.05 }}
-                className={cn(
-                  "flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors",
-                  message.isRead
-                    ? "bg-white/[0.01] hover:bg-transparent"
-                    : "bg-white/[0.04] hover:bg-white/[0.06]"
-                )}
+                className="flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors"
               >
                 {/* Avatar */}
                 <div className="relative flex-shrink-0">
@@ -149,16 +146,11 @@ export function Inbox() {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-white/50" />
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5" style={{ color: "var(--text-muted)" }} />
                     </div>
                   )}
-                  <div
-                    className={cn(
-                      "absolute -bottom-0.5 -right-0.5 p-1 rounded-full",
-                      platform.bgColor
-                    )}
-                  >
+                  <div className="absolute -bottom-0.5 -right-0.5 p-0.5">
                     <span className={platform.color}>{platform.icon}</span>
                   </div>
                 </div>

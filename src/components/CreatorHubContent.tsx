@@ -59,7 +59,7 @@ function KPICard({
     >
       {/* Mobile Layout: Horizontal row */}
       <div className="flex sm:hidden items-center gap-3">
-        <div className="p-2 rounded-lg bg-white/[0.05] text-white/60 flex-shrink-0">
+        <div className="p-2 rounded-lg flex-shrink-0" style={{ color: "var(--text-muted)" }}>
           {icon}
         </div>
         <div className="flex-1 min-w-0">
@@ -94,7 +94,7 @@ function KPICard({
       {/* Desktop Layout: Vertical card */}
       <div className="hidden sm:block">
         <div className="flex items-start justify-between mb-3">
-          <div className="p-2.5 rounded-xl bg-white/[0.05] text-white/60">
+          <div className="p-2.5 rounded-xl" style={{ color: "var(--text-muted)" }}>
             {icon}
           </div>
           {meta ? (
@@ -383,7 +383,10 @@ export function CreatorHubContent() {
                   <h3 className="text-lg font-semibold text-white">
                     Upcoming
                   </h3>
-                  <button className="text-sm text-white/50 hover:text-white transition-colors flex items-center gap-1">
+                  <button 
+                    className="text-sm transition-colors flex items-center gap-1"
+                    style={{ color: "var(--text-muted)" }}
+                  >
                     View all <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>

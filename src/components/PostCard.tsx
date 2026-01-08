@@ -87,13 +87,13 @@ export function PostCard({ post }: PostCardProps) {
               alt={post.authorName}
               className="w-10 h-10 rounded-full object-cover"
             />
-            <div className="absolute -bottom-0.5 -right-0.5 p-1 rounded-full bg-gray-900">
+            <div className="absolute -bottom-0.5 -right-0.5 p-0.5">
               <span
                 className={cn(
-                  "text-white/70",
                   post.authorType === "brand" && "text-amber-400",
                   post.authorType === "agency" && "text-blue-400"
                 )}
+                style={{ color: post.authorType === "model" ? "var(--text-secondary)" : undefined }}
               >
                 {profileTypeIcons[post.authorType]}
               </span>
@@ -104,7 +104,7 @@ export function PostCard({ post }: PostCardProps) {
             <p className="text-xs text-white/50">{formatTime(post.createdAt)}</p>
           </div>
         </div>
-        <button className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors">
+        <button className="p-2 rounded-lg transition-colors" style={{ color: "var(--text-muted)" }}>
           <MoreHorizontal className="w-5 h-5" />
         </button>
       </div>
@@ -239,7 +239,13 @@ export function PostCard({ post }: PostCardProps) {
           </button>
         </div>
         {script && (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-xs sm:text-sm text-white/80 whitespace-pre-line">
+          <div 
+            className="rounded-2xl border p-3 text-xs sm:text-sm whitespace-pre-line"
+            style={{ 
+              borderColor: "var(--border-subtle)", 
+              color: "var(--text-secondary)" 
+            }}
+          >
             {script}
           </div>
         )}
