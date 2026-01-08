@@ -49,39 +49,80 @@ function KPICard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
       className={cn(
-        "bg-transparent border border-white/[0.06] rounded-2xl p-5 hover:bg-white/[0.05] transition-colors",
+        "bg-transparent border border-white/[0.06] rounded-2xl transition-colors",
+        // Mobile: compact horizontal row
+        "p-3 sm:p-5",
+        // Desktop: card style with hover
+        "sm:hover:bg-white/[0.05]",
         isActive && "border-white/30 bg-white/[0.07] shadow-lg shadow-violet-500/20"
       )}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="p-2.5 rounded-xl bg-white/[0.05] text-white/60">
+      {/* Mobile Layout: Horizontal row */}
+      <div className="flex sm:hidden items-center gap-3">
+        <div className="p-2 rounded-lg bg-white/[0.05] text-white/60 flex-shrink-0">
           {icon}
         </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-white/50 truncate">{label}</p>
+        </div>
+        <p className="text-lg font-bold text-white flex-shrink-0">{value}</p>
         {meta ? (
-          <div className="text-[11px] font-medium px-2 py-1 rounded-full border border-white/15 text-white/70">
+          <div className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/15 text-white/70 flex-shrink-0">
             {meta}
           </div>
         ) : (
           change !== undefined && (
-          <div
-            className={cn(
-              "flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
-              isPositive
-                ? "text-emerald-400 bg-emerald-500/10"
-                : "text-rose-400 bg-rose-500/10"
-            )}
-          >
-            {isPositive ? (
-              <TrendingUp className="w-3 h-3" />
-            ) : (
-              <TrendingDown className="w-3 h-3" />
-            )}
-            {Math.abs(change)}%
-          </div>
-        ))}
+            <div
+              className={cn(
+                "flex items-center gap-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0",
+                isPositive
+                  ? "text-emerald-400 bg-emerald-500/10"
+                  : "text-rose-400 bg-rose-500/10"
+              )}
+            >
+              {isPositive ? (
+                <TrendingUp className="w-2.5 h-2.5" />
+              ) : (
+                <TrendingDown className="w-2.5 h-2.5" />
+              )}
+              {Math.abs(change)}%
+            </div>
+          )
+        )}
       </div>
-      <p className="text-2xl font-bold text-white mb-1">{value}</p>
-      <p className="text-sm text-white/50">{label}</p>
+
+      {/* Desktop Layout: Vertical card */}
+      <div className="hidden sm:block">
+        <div className="flex items-start justify-between mb-3">
+          <div className="p-2.5 rounded-xl bg-white/[0.05] text-white/60">
+            {icon}
+          </div>
+          {meta ? (
+            <div className="text-[11px] font-medium px-2 py-1 rounded-full border border-white/15 text-white/70">
+              {meta}
+            </div>
+          ) : (
+            change !== undefined && (
+            <div
+              className={cn(
+                "flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
+                isPositive
+                  ? "text-emerald-400 bg-emerald-500/10"
+                  : "text-rose-400 bg-rose-500/10"
+              )}
+            >
+              {isPositive ? (
+                <TrendingUp className="w-3 h-3" />
+              ) : (
+                <TrendingDown className="w-3 h-3" />
+              )}
+              {Math.abs(change)}%
+            </div>
+          ))}
+        </div>
+        <p className="text-2xl font-bold text-white mb-1">{value}</p>
+        <p className="text-sm text-white/50">{label}</p>
+      </div>
     </motion.div>
   );
 }
