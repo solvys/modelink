@@ -74,19 +74,19 @@ function BrandProfile() {
   const brand = mockBrandProfile;
 
   return (
-    <div className="min-h-screen bg-[--bg-base] text-white">
+    <div className="min-h-screen bg-[--bg-base]" style={{ color: "var(--text-primary)" }}>
       {/* Header */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-gray-950/80 border-b border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="w-full max-w-[764px] lg:max-w-6xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
             <Link
               to="/"
               className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back</span>
+              <span className="hidden sm:inline">Back</span>
             </Link>
-            <button className="px-5 py-2 rounded-xl bg-white text-gray-900 font-medium hover:bg-white/90 transition-colors">
+            <button className="px-4 sm:px-5 py-2 rounded-xl bg-white text-gray-900 font-medium hover:bg-white/90 transition-colors text-sm sm:text-base">
               Work With Us
             </button>
           </div>
@@ -94,7 +94,7 @@ function BrandProfile() {
       </header>
 
       {/* Cover Image */}
-      <div className="relative h-64 md:h-80">
+      <div className="relative h-48 sm:h-64 md:h-80">
         <img
           src={brand.coverImage}
           alt=""
@@ -104,26 +104,26 @@ function BrandProfile() {
       </div>
 
       {/* Profile Info */}
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="w-full max-w-[764px] lg:max-w-6xl mx-auto px-4 sm:px-6 overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="-mt-16 relative z-10 mb-12"
         >
-          <div className="flex flex-col md:flex-row gap-6 items-start">
+          <div className="flex flex-col md:flex-row gap-4 sm:gap-6 items-start">
             <img
               src={brand.logo}
               alt={brand.name}
-              className="w-32 h-32 rounded-2xl object-cover border-4 border-[#0a0a0a]"
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover border-4 border-[#0a0a0a]"
             />
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl md:text-4xl font-bold">{brand.name}</h1>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">{brand.name}</h1>
+                <span className="px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">
                   Brand
                 </span>
               </div>
-              <p className="text-xl text-white/60 mb-2 italic">{brand.tagline}</p>
+              <p className="text-base sm:text-xl text-white/60 mb-2 italic">{brand.tagline}</p>
               <div className="flex flex-wrap items-center gap-4 text-white/60 mb-4">
                 <div className="flex items-center gap-1.5">
                   <MapPin className="w-4 h-4" />
@@ -151,22 +151,22 @@ function BrandProfile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-3 gap-4 mb-12"
+          className="grid grid-cols-3 gap-2 sm:gap-4 mb-8 sm:mb-12"
         >
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 text-center">
-            <Camera className="w-6 h-6 mx-auto mb-2 text-white/40" />
-            <p className="text-3xl font-bold mb-1">{brand.stats.campaigns}</p>
-            <p className="text-sm text-white/50">Campaigns</p>
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center">
+            <Camera className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1.5 sm:mb-2 text-white/40" />
+            <p className="text-xl sm:text-3xl font-bold mb-0.5 sm:mb-1">{brand.stats.campaigns}</p>
+            <p className="text-[10px] sm:text-sm text-white/50">Campaigns</p>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 text-center">
-            <Camera className="w-6 h-6 mx-auto mb-2 text-white/40" />
-            <p className="text-3xl font-bold mb-1">{brand.stats.collaborations}</p>
-            <p className="text-sm text-white/50">Model Collabs</p>
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center">
+            <Camera className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1.5 sm:mb-2 text-white/40" />
+            <p className="text-xl sm:text-3xl font-bold mb-0.5 sm:mb-1">{brand.stats.collaborations}</p>
+            <p className="text-[10px] sm:text-sm text-white/50">Model Collabs</p>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 text-center">
-            <Star className="w-6 h-6 mx-auto mb-2 text-amber-400" />
-            <p className="text-3xl font-bold mb-1">{brand.stats.reviews}</p>
-            <p className="text-sm text-white/50">Avg Rating</p>
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center">
+            <Star className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1.5 sm:mb-2 text-amber-400" />
+            <p className="text-xl sm:text-3xl font-bold mb-0.5 sm:mb-1">{brand.stats.reviews}</p>
+            <p className="text-[10px] sm:text-sm text-white/50">Avg Rating</p>
           </div>
         </motion.div>
 

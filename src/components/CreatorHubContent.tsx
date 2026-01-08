@@ -49,39 +49,80 @@ function KPICard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
       className={cn(
-        "bg-transparent border border-white/[0.06] rounded-2xl p-5 hover:bg-white/[0.05] transition-colors",
+        "bg-transparent border border-white/[0.06] rounded-2xl transition-colors",
+        // Mobile: compact horizontal row
+        "p-3 sm:p-5",
+        // Desktop: card style with hover
+        "sm:hover:bg-white/[0.05]",
         isActive && "border-white/30 bg-white/[0.07] shadow-lg shadow-violet-500/20"
       )}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="p-2.5 rounded-xl bg-white/[0.05] text-white/60">
+      {/* Mobile Layout: Horizontal row */}
+      <div className="flex sm:hidden items-center gap-3">
+        <div className="p-2 rounded-lg bg-white/[0.05] text-white/60 flex-shrink-0">
           {icon}
         </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-white/50 truncate">{label}</p>
+        </div>
+        <p className="text-lg font-bold text-white flex-shrink-0">{value}</p>
         {meta ? (
-          <div className="text-[11px] font-medium px-2 py-1 rounded-full border border-white/15 text-white/70">
+          <div className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/15 text-white/70 flex-shrink-0">
             {meta}
           </div>
         ) : (
           change !== undefined && (
-          <div
-            className={cn(
-              "flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
-              isPositive
-                ? "text-emerald-400 bg-emerald-500/10"
-                : "text-rose-400 bg-rose-500/10"
-            )}
-          >
-            {isPositive ? (
-              <TrendingUp className="w-3 h-3" />
-            ) : (
-              <TrendingDown className="w-3 h-3" />
-            )}
-            {Math.abs(change)}%
-          </div>
-        ))}
+            <div
+              className={cn(
+                "flex items-center gap-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0",
+                isPositive
+                  ? "text-emerald-400 bg-emerald-500/10"
+                  : "text-rose-400 bg-rose-500/10"
+              )}
+            >
+              {isPositive ? (
+                <TrendingUp className="w-2.5 h-2.5" />
+              ) : (
+                <TrendingDown className="w-2.5 h-2.5" />
+              )}
+              {Math.abs(change)}%
+            </div>
+          )
+        )}
       </div>
-      <p className="text-2xl font-bold text-white mb-1">{value}</p>
-      <p className="text-sm text-white/50">{label}</p>
+
+      {/* Desktop Layout: Vertical card */}
+      <div className="hidden sm:block">
+        <div className="flex items-start justify-between mb-3">
+          <div className="p-2.5 rounded-xl bg-white/[0.05] text-white/60">
+            {icon}
+          </div>
+          {meta ? (
+            <div className="text-[11px] font-medium px-2 py-1 rounded-full border border-white/15 text-white/70">
+              {meta}
+            </div>
+          ) : (
+            change !== undefined && (
+            <div
+              className={cn(
+                "flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
+                isPositive
+                  ? "text-emerald-400 bg-emerald-500/10"
+                  : "text-rose-400 bg-rose-500/10"
+              )}
+            >
+              {isPositive ? (
+                <TrendingUp className="w-3 h-3" />
+              ) : (
+                <TrendingDown className="w-3 h-3" />
+              )}
+              {Math.abs(change)}%
+            </div>
+          ))}
+        </div>
+        <p className="text-2xl font-bold text-white mb-1">{value}</p>
+        <p className="text-sm text-white/50">{label}</p>
+      </div>
     </motion.div>
   );
 }
@@ -277,7 +318,7 @@ export function CreatorHubContent() {
   }, []);
 
   return (
-    <div className="relative min-h-full pt-28 pb-12">
+    <div className="relative min-h-full pt-20 sm:pt-28 pb-12">
       {/* Subtle Background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-[120px]" />
@@ -301,9 +342,6 @@ export function CreatorHubContent() {
               <h1 className="text-3xl lg:text-4xl font-bold text-white">
                 Welcome back, {model.name.split(" ")[0]}
               </h1>
-              <p className="text-white/60 max-w-lg">
-                Here's an overview of your career metrics and recent activity.
-              </p>
             </motion.div>
 
             {/* KPI Grid */}
@@ -389,30 +427,30 @@ export function CreatorHubContent() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-transparent border border-white/[0.06] rounded-2xl p-5"
+              className="bg-transparent border border-white/[0.06] rounded-2xl p-4 sm:p-5"
             >
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-base sm:text-lg font-semibold text-white">
                     Top Performing Posts
                   </h3>
-                  <p className="text-sm text-white/50">Last 14 days</p>
+                  <p className="text-xs sm:text-sm text-white/50">Last 14 days</p>
                 </div>
               </div>
               <div className="space-y-3">
                 {topPosts.map((post) => (
                   <div
                     key={post.id}
-                    className="flex items-center justify-between p-4 rounded-xl bg-transparent border border-white/[0.04]"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 rounded-xl bg-transparent border border-white/[0.04]"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-violet-500/20 to-blue-500/20 flex items-center justify-center">
-                        <span className="text-xs font-medium text-white/60 uppercase">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-violet-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[10px] sm:text-xs font-medium text-white/60 uppercase">
                           {post.platform.slice(0, 2)}
                         </span>
                       </div>
-                      <div>
-                        <p className="font-medium text-white text-sm">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-white text-sm truncate">
                           {post.title}
                         </p>
                         <p className="text-xs text-white/50">
@@ -420,13 +458,16 @@ export function CreatorHubContent() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-white">
-                        {post.engagementRate}%
-                      </p>
-                      <p className="text-xs text-white/50">
-                        {post.reach.toLocaleString()} reach
-                      </p>
+                    <div className="flex items-center justify-between sm:justify-end sm:text-right gap-4 pl-[52px] sm:pl-0">
+                      <div className="sm:hidden text-xs text-white/40">Engagement</div>
+                      <div>
+                        <p className="text-base sm:text-lg font-bold text-white">
+                          {post.engagementRate}%
+                        </p>
+                        <p className="text-[10px] sm:text-xs text-white/50">
+                          {post.reach.toLocaleString()} reach
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -76,46 +76,50 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
           />
 
-          {/* Panel */}
+          {/* Panel - Full screen on mobile, slide from right on desktop */}
           <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            initial={{ x: "100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "100%", opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="glass-panel fixed right-0 top-0 h-full w-full max-w-md border-l border-white/10 text-white shadow-[0_35px_75px_rgba(15,23,42,0.65)] z-50 overflow-y-auto"
+            className="glass-panel fixed inset-0 sm:inset-y-0 sm:right-0 sm:left-auto h-full w-full sm:max-w-md border-l border-white/10 text-white shadow-[0_35px_75px_rgba(15,23,42,0.65)] z-50 overflow-y-auto"
           >
-            <div className="p-6">
+            <div className="p-4 sm:p-6 min-h-full flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white">Settings</h2>
-                <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/20 transition-colors">
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Settings</h2>
+                <button 
+                  onClick={onClose} 
+                  className="p-2.5 rounded-xl hover:bg-white/20 transition-colors"
+                  aria-label="Close settings"
+                >
                   <X className="w-5 h-5 text-white/70" />
                 </button>
               </div>
 
-              {/* Tabs */}
-              <div className="flex gap-2 mb-6 bg-white/5 border border-white/10 rounded-2xl p-1 backdrop-blur">
+              {/* Tabs - Horizontal scrollable on mobile */}
+              <div className="flex gap-2 mb-6 bg-white/5 border border-white/10 rounded-2xl p-1 backdrop-blur overflow-x-auto scrollbar-hide">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-2xl transition-all ${
+                      className={`flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all min-w-[80px] ${
                         activeTab === tab.id
                           ? "bg-gradient-to-r from-baby-pink to-baby-blue text-white shadow-lg"
                           : "text-white/70 hover:bg-white/5"
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span className="text-sm font-medium">{tab.label}</span>
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm font-medium whitespace-nowrap">{tab.label}</span>
                     </button>
                   );
                 })}
               </div>
 
               {/* Content */}
-              <div className="space-y-6">
+              <div className="space-y-6 flex-1">
                 {activeTab === "profile" && (
                   <div className="space-y-4">
                     <div>
@@ -126,7 +130,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         type="text"
                         value={profileData.name}
                         onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base"
                       />
                     </div>
                     <div>
@@ -137,7 +141,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         value={profileData.bio}
                         onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                         rows={4}
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base resize-none"
                       />
                     </div>
                     <div>
@@ -148,7 +152,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         type="email"
                         value={profileData.email}
                         onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base"
                       />
                     </div>
                     <div>
@@ -159,7 +163,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         type="text"
                         value={profileData.location}
                         onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base"
                       />
                     </div>
                   </div>
@@ -183,7 +187,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                                 localStorage.setItem("fontTheme", font.id);
                               }
                             }}
-                            className={`w-full p-3 rounded-2xl border transition-all text-left ${
+                            className={`w-full p-4 rounded-xl border transition-all text-left ${
                               selectedFont === font.id
                                 ? "border-white/70 bg-white/10 shadow-lg"
                                 : "border-white/15 hover:border-white/40 bg-white/5"
@@ -221,7 +225,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                                 localStorage.setItem("colorTheme", theme.id);
                               }
                             }}
-                            className={`w-full p-3 rounded-2xl border transition-all text-left ${
+                            className={`w-full p-4 rounded-xl border transition-all text-left ${
                               selectedTheme === theme.id
                                 ? "border-white/70 bg-white/10 shadow-lg"
                                 : "border-white/15 hover:border-white/40 bg-white/5"
@@ -250,7 +254,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         value={socialLinks.instagram}
                         onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
                         placeholder="@username"
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base"
                       />
                     </div>
                     <div>
@@ -262,7 +266,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         value={socialLinks.twitter}
                         onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })}
                         placeholder="@username"
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base"
                       />
                     </div>
                     <div>
@@ -274,7 +278,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         value={socialLinks.tiktok}
                         onChange={(e) => setSocialLinks({ ...socialLinks, tiktok: e.target.value })}
                         placeholder="@username"
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base"
                       />
                     </div>
                     <div>
@@ -286,19 +290,21 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                         value={socialLinks.website}
                         onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
                         placeholder="https://example.com"
-                        className="w-full px-4 py-2 rounded-2xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition"
+                        className="w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-white placeholder-white/50 outline-none focus:border-white/60 transition text-base"
                       />
                     </div>
                   </div>
                 )}
+              </div>
 
-                {/* Save Button */}
+              {/* Save Button - Sticky at bottom on mobile */}
+              <div className="mt-6 pt-4 border-t border-white/10 sticky bottom-0 bg-inherit">
                 <button
                   onClick={() => {
                     console.log("Saving settings:", { profileData, socialLinks });
                     alert("Settings saved! (Will integrate with Clerk/Zapier)");
                   }}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-baby-pink via-baby-blue to-baby-pink text-white py-3 rounded-2xl font-semibold shadow-2xl liquid-hover"
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-baby-pink via-baby-blue to-baby-pink text-white py-3.5 rounded-xl font-semibold shadow-2xl liquid-hover"
                 >
                   <Save className="w-5 h-5" />
                   Save Changes
@@ -311,6 +317,3 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     </AnimatePresence>
   );
 }
-
-
-

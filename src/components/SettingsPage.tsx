@@ -11,11 +11,9 @@ import {
   Sun,
   ChevronRight,
   Check,
-  ExternalLink,
   Instagram,
   Youtube,
   Mail,
-  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
@@ -31,7 +29,8 @@ interface TabButtonProps {
   onClick: () => void;
 }
 
-function TabButton({ id, label, icon, active, onClick }: TabButtonProps) {
+// Desktop sidebar tab button
+function TabButton({ label, icon, active, onClick }: TabButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -45,6 +44,29 @@ function TabButton({ id, label, icon, active, onClick }: TabButtonProps) {
       {icon}
       <span className="font-medium">{label}</span>
       {active && <ChevronRight className="w-4 h-4 ml-auto" />}
+    </button>
+  );
+}
+
+// Mobile horizontal tab button
+function MobileTabButton({
+  label,
+  icon,
+  active,
+  onClick,
+}: Omit<TabButtonProps, "id">) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl text-center transition-colors flex-shrink-0 min-w-[80px]",
+        active
+          ? "bg-white/10 text-white"
+          : "text-white/60 hover:text-white hover:bg-white/5"
+      )}
+    >
+      {icon}
+      <span className="text-xs font-medium">{label}</span>
     </button>
   );
 }
@@ -94,7 +116,7 @@ export function SettingsPage() {
 
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
     { id: "integrations", label: "Integrations", icon: <PlugZap className="w-5 h-5" /> },
-    { id: "links", label: "Profile Links", icon: <Link2 className="w-5 h-5" /> },
+    { id: "links", label: "Links", icon: <Link2 className="w-5 h-5" /> },
     { id: "appearance", label: "Appearance", icon: <Palette className="w-5 h-5" /> },
     { id: "account", label: "Account", icon: <User className="w-5 h-5" /> },
   ];
@@ -107,23 +129,43 @@ export function SettingsPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 lg:px-8">
+      <div className="w-full max-w-[764px] lg:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 lg:mb-8"
         >
-          <h1 className="text-3xl font-bold text-white">Settings</h1>
-          <p className="text-white/60 mt-2">Manage your account and preferences</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-white">Settings</h1>
+          <p className="text-white/60 mt-2 text-sm lg:text-base">Manage your account and preferences</p>
         </motion.div>
 
-        <div className="flex gap-8">
-          {/* Sidebar */}
+        {/* Mobile Horizontal Tabs - Scrollable */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-hide"
+        >
+          <div className="flex gap-2 pb-2 min-w-max">
+            {tabs.map((tab) => (
+              <MobileTabButton
+                key={tab.id}
+                label={tab.label}
+                icon={tab.icon}
+                active={activeTab === tab.id}
+                onClick={() => setActiveTab(tab.id)}
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Desktop Sidebar - Hidden on Mobile */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="w-64 flex-shrink-0 space-y-2"
+            className="hidden lg:block w-64 flex-shrink-0 space-y-2"
           >
             {tabs.map((tab) => (
               <TabButton
@@ -142,12 +184,12 @@ export function SettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="flex-1 bg-transparent border border-white/[0.06] rounded-2xl p-6"
+            className="flex-1 min-w-0 bg-transparent border border-white/[0.06] rounded-2xl p-4 sm:p-6"
           >
             {activeTab === "integrations" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-2">
+                  <h2 className="text-lg lg:text-xl font-semibold text-white mb-2">
                     Platform Integrations
                   </h2>
                   <p className="text-sm text-white/50">
@@ -159,23 +201,23 @@ export function SettingsPage() {
                   {integrations.map((integration) => (
                     <div
                       key={integration.id}
-                      className="flex items-center justify-between p-4 rounded-xl bg-[--bg-input] border border-white/[0.06]"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[--bg-input] border border-white/[0.06]"
                     >
                       <div className="flex items-center gap-4">
                         <div
                           className={cn(
-                            "w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br",
+                            "w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br flex-shrink-0",
                             integration.color
                           )}
                         >
                           {integration.icon}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <p className="font-medium text-white">
                             {integration.name}
                           </p>
                           {integration.connected && integration.handle && (
-                            <p className="text-sm text-white/50">
+                            <p className="text-sm text-white/50 truncate">
                               {integration.handle}
                             </p>
                           )}
@@ -183,14 +225,18 @@ export function SettingsPage() {
                       </div>
                       <button
                         className={cn(
-                          "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                          "px-4 py-2.5 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto",
                           integration.connected
-                            ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                            ? "connected-status-btn"
                             : "bg-white/10 text-white hover:bg-white/20"
                         )}
+                        style={integration.connected ? {
+                          backgroundColor: "var(--connected-bg, rgba(16, 185, 129, 0.15))",
+                          color: "var(--connected-text, #34d399)",
+                        } : undefined}
                       >
                         {integration.connected ? (
-                          <span className="flex items-center gap-2">
+                          <span className="flex items-center justify-center gap-2">
                             <Check className="w-4 h-4" /> Connected
                           </span>
                         ) : (
@@ -206,7 +252,7 @@ export function SettingsPage() {
             {activeTab === "links" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-2">
+                  <h2 className="text-lg lg:text-xl font-semibold text-white mb-2">
                     Profile Links
                   </h2>
                   <p className="text-sm text-white/50">
@@ -229,13 +275,13 @@ export function SettingsPage() {
                       <input
                         type="text"
                         placeholder={field.placeholder}
-                        className="w-full px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white placeholder:text-white/30 focus:outline-none focus:border-white/15 transition-colors"
+                        className="w-full px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white placeholder:text-white/30 focus:outline-none focus:border-white/15 transition-colors text-base"
                       />
                     </div>
                   ))}
                 </div>
 
-                <button className="px-6 py-3 rounded-xl bg-white text-gray-900 font-medium hover:bg-white/90 transition-colors">
+                <button className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white text-gray-900 font-medium hover:bg-white/90 transition-colors">
                   Save Changes
                 </button>
               </div>
@@ -244,7 +290,7 @@ export function SettingsPage() {
             {activeTab === "appearance" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-2">
+                  <h2 className="text-lg lg:text-xl font-semibold text-white mb-2">
                     Appearance
                   </h2>
                   <p className="text-sm text-white/50">
@@ -253,7 +299,7 @@ export function SettingsPage() {
                 </div>
 
                 {/* Theme Toggle */}
-                <div className="flex items-center justify-between p-4 rounded-xl bg-[--bg-input] border border-white/[0.06]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[--bg-input] border border-white/[0.06]">
                   <div>
                     <p className="font-medium text-white">Theme</p>
                     <p className="text-sm text-white/50">
@@ -262,7 +308,7 @@ export function SettingsPage() {
                   </div>
                   <button
                     onClick={toggleTheme}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
                   >
                     {theme === "dark" ? (
                       <>
@@ -282,13 +328,13 @@ export function SettingsPage() {
                   <p className="text-sm text-white/50 -mt-1">
                     Choose how your public profile appears
                   </p>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     {(["model", "agency", "brand"] as ProfileType[]).map((type) => (
                       <button
                         key={type}
                         onClick={() => setProfileType(type)}
                         className={cn(
-                          "px-4 py-3 rounded-xl text-sm font-medium capitalize transition-all",
+                          "px-3 sm:px-4 py-3 rounded-xl text-sm font-medium capitalize transition-all",
                           profileType === type
                             ? "bg-white text-gray-900"
                             : "bg-[--bg-input] border border-white/[0.06] text-white/70 hover:bg-white/[0.05]"
@@ -305,7 +351,7 @@ export function SettingsPage() {
             {activeTab === "account" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-2">
+                  <h2 className="text-lg lg:text-xl font-semibold text-white mb-2">
                     Account Settings
                   </h2>
                   <p className="text-sm text-white/50">
@@ -321,7 +367,7 @@ export function SettingsPage() {
                     <input
                       type="text"
                       defaultValue="Aria Chen"
-                      className="w-full px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white focus:outline-none focus:border-white/15 transition-colors"
+                      className="w-full px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white focus:outline-none focus:border-white/15 transition-colors text-base"
                     />
                   </div>
                   <div>
@@ -331,25 +377,25 @@ export function SettingsPage() {
                     <input
                       type="email"
                       defaultValue="aria@modelink.com"
-                      className="w-full px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white focus:outline-none focus:border-white/15 transition-colors"
+                      className="w-full px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white focus:outline-none focus:border-white/15 transition-colors text-base"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-white/70 mb-2">
                       Profile URL
                     </label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-white/50">modelink.com/</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                      <span className="text-white/50 text-sm sm:text-base">modelink.com/</span>
                       <input
                         type="text"
                         defaultValue="aria-chen"
-                        className="flex-1 px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white focus:outline-none focus:border-white/15 transition-colors"
+                        className="flex-1 px-4 py-3 rounded-xl bg-[--bg-input] border border-white/[0.06] text-white focus:outline-none focus:border-white/15 transition-colors text-base"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button className="px-6 py-3 rounded-xl bg-white text-gray-900 font-medium hover:bg-white/90 transition-colors">
                     Save Changes
                   </button>
@@ -365,4 +411,3 @@ export function SettingsPage() {
     </div>
   );
 }
-
