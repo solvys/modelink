@@ -46,19 +46,6 @@ export function QuickSettingsPanel() {
 
   return (
     <>
-      {/* Trigger Button - Fixed position mirroring sidebar expand button */}
-      <button
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-label="Quick settings"
-        className={cn(
-          "hidden lg:flex items-center justify-center fixed right-4 top-6 p-3 rounded-2xl border border-[--border-subtle] bg-[--bg-card] backdrop-blur-xl transition-colors z-40",
-          isOpen
-            ? "text-white bg-white/15"
-            : "text-white/80 hover:text-white hover:bg-white/15"
-        )}
-      >
-        <Settings className="w-5 h-5" />
-      </button>
 
       <AnimatePresence>
         {isOpen && (
