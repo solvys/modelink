@@ -227,9 +227,13 @@ export function SettingsPage() {
                         className={cn(
                           "px-4 py-2.5 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto",
                           integration.connected
-                            ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                            ? "connected-status-btn"
                             : "bg-white/10 text-white hover:bg-white/20"
                         )}
+                        style={integration.connected ? {
+                          backgroundColor: "var(--connected-bg, rgba(16, 185, 129, 0.15))",
+                          color: "var(--connected-text, #34d399)",
+                        } : undefined}
                       >
                         {integration.connected ? (
                           <span className="flex items-center justify-center gap-2">
