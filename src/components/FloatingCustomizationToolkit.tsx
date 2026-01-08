@@ -18,11 +18,11 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const palettes = [
-  { id: "blush", name: "Blush", color: "#F8E8E8" },
-  { id: "sage", name: "Sage", color: "#E8F0E8" },
-  { id: "lavender", name: "Lavender", color: "#EDE8F5" },
-  { id: "custom", name: "Custom", gradient: true },
-] as const;
+  { id: "blush", name: "Blush", color: "#F8E8E8", isGradient: false },
+  { id: "sage", name: "Sage", color: "#E8F0E8", isGradient: false },
+  { id: "lavender", name: "Lavender", color: "#EDE8F5", isGradient: false },
+  { id: "custom", name: "Custom", color: "", isGradient: true },
+];
 
 const fonts = [
   { id: "inter", name: "Inter", className: "font-sans" },
@@ -176,8 +176,6 @@ export function FloatingCustomizationToolkit() {
                         borderColor: theme === "light" ? "var(--accent-primary)" : "var(--border-subtle)",
                         backgroundColor: theme === "light" ? "rgba(245, 158, 11, 0.15)" : "transparent",
                         color: "var(--text-primary)",
-                        ringColor: "var(--accent-primary)",
-                        ringOffsetColor: "var(--bg-elevated)",
                       }}
                     >
                       <Sun className="w-5 h-5" />
@@ -193,8 +191,6 @@ export function FloatingCustomizationToolkit() {
                         borderColor: theme === "dark" ? "var(--accent-primary)" : "var(--border-subtle)",
                         backgroundColor: theme === "dark" ? "rgba(99, 102, 241, 0.15)" : "transparent",
                         color: "var(--text-primary)",
-                        ringColor: "var(--accent-primary)",
-                        ringOffsetColor: "var(--bg-elevated)",
                       }}
                     >
                       <Moon className="w-5 h-5" />
@@ -220,14 +216,12 @@ export function FloatingCustomizationToolkit() {
                         style={{
                           borderColor: selectedPalette === palette.id ? "var(--accent-primary)" : "var(--border-subtle)",
                           backgroundColor: "transparent",
-                          ringColor: "var(--accent-primary)",
-                          ringOffsetColor: "var(--bg-elevated)",
                         }}
                       >
                         <div
                           className="w-full h-10 rounded-lg mb-2"
                           style={{
-                            background: palette.gradient 
+                            background: palette.isGradient 
                               ? "linear-gradient(135deg, #F8E8E8, #EDE8F5, #E8F0E8)"
                               : palette.color,
                           }}
@@ -285,8 +279,6 @@ export function FloatingCustomizationToolkit() {
                         style={{
                           borderColor: selectedFont === font.id ? "var(--accent-primary)" : "var(--border-subtle)",
                           backgroundColor: "transparent",
-                          ringColor: "var(--accent-primary)",
-                          ringOffsetColor: "var(--bg-elevated)",
                         }}
                       >
                         <p className={cn("text-base mb-1", font.className)} style={{ color: "var(--text-primary)" }}>
@@ -342,8 +334,6 @@ export function FloatingCustomizationToolkit() {
                           borderColor: logoPlacement === placement ? "var(--accent-primary)" : "var(--border-subtle)",
                           backgroundColor: "transparent",
                           color: "var(--text-primary)",
-                          ringColor: "var(--accent-primary)",
-                          ringOffsetColor: "var(--bg-elevated)",
                         }}
                       >
                         {placement}
