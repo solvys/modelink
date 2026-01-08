@@ -342,9 +342,6 @@ export function CreatorHubContent() {
               <h1 className="text-3xl lg:text-4xl font-bold text-white">
                 Welcome back, {model.name.split(" ")[0]}
               </h1>
-              <p className="text-white/60 max-w-lg">
-                Here's an overview of your career metrics and recent activity.
-              </p>
             </motion.div>
 
             {/* KPI Grid */}
