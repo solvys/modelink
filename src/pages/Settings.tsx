@@ -18,7 +18,7 @@ function Settings() {
         style={sidebarPaddingStyle}
       >
         <PillNavbar onSettingsClick={() => {}} />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           <SettingsPage />
         </main>
       </div>
@@ -27,4 +27,3 @@ function Settings() {
 }
 
 export default Settings;
-

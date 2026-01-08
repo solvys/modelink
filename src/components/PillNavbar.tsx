@@ -63,6 +63,7 @@ export function PillNavbar({ onSettingsClick }: PillNavbarProps) {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", damping: 25, stiffness: 200 }}
+      aria-label="Main navigation"
     >
       <motion.div
         className="w-full max-w-[860px] rounded-full border border-white/10 backdrop-blur-2xl flex items-center justify-between gap-2 px-2 pointer-events-auto"

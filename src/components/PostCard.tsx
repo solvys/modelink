@@ -77,9 +77,9 @@ export function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <div className="bg-transparent border border-white/[0.06] rounded-2xl overflow-hidden">
+    <div className="bg-transparent border border-white/[0.06] rounded-2xl overflow-hidden w-full min-w-0">
       {/* Header */}
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-3 sm:p-4">
         <div className="flex items-center gap-3">
           <div className="relative">
             <img
@@ -110,7 +110,7 @@ export function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Content */}
-      <div className="px-4 pb-3">
+      <div className="px-3 sm:px-4 pb-3">
         <p className="text-white/90 text-sm whitespace-pre-wrap">
           {post.content.split(/(#\w+)/g).map((part, i) =>
             part.startsWith("#") ? (
@@ -183,8 +183,8 @@ export function PostCard({ post }: PostCardProps) {
       )}
 
       {/* Actions */}
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between p-3 sm:p-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button onClick={() => toggleLike()} className="flex items-center gap-2 group">
             <motion.div whileTap={{ scale: 0.8 }}>
               <Heart
@@ -224,14 +224,14 @@ export function PostCard({ post }: PostCardProps) {
         </button>
       </div>
 
-      <div className="border-t border-white/[0.04] p-4 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs uppercase tracking-wide text-white/40">
+      <div className="border-t border-white/[0.04] p-3 sm:p-4 space-y-3">
+        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-2 sm:gap-3">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wide text-white/40">
             Double tap to open Instagram source
           </div>
           <button
             onClick={handleGenerateScript}
-            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium bg-white text-gray-900 hover:bg-white/90 transition-colors disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-full w-full sm:w-auto px-4 py-2.5 sm:py-2 text-sm font-medium bg-white text-gray-900 hover:bg-white/90 transition-colors disabled:opacity-50"
             disabled={isGeneratingScript}
           >
             <Sparkles className="w-4 h-4" />
@@ -239,7 +239,7 @@ export function PostCard({ post }: PostCardProps) {
           </button>
         </div>
         {script && (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-white/80 whitespace-pre-line">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-xs sm:text-sm text-white/80 whitespace-pre-line">
             {script}
           </div>
         )}

@@ -83,10 +83,17 @@ export function AppSidebar() {
     isMounted &&
     createPortal(
       <>
+        {/* Mobile floating menu button - always visible on mobile */}
         <button
           onClick={toggleCollapsed}
           aria-label={collapsed ? "Open menu" : "Close menu"}
-          className="lg:hidden fixed bottom-6 right-6 p-4 rounded-3xl border border-white/15 bg-black/70 backdrop-blur-2xl text-white shadow-2xl shadow-violet-500/20 hover:bg-white/10 transition-colors z-50"
+          className="lg:hidden fixed bottom-6 right-6 p-4 rounded-3xl border backdrop-blur-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all z-[60]"
+          style={{
+            borderColor: "var(--border-muted)",
+            backgroundColor: "var(--bg-elevated)",
+            color: "var(--text-primary)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+          }}
         >
           {collapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
         </button>
@@ -98,7 +105,8 @@ export function AppSidebar() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="lg:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+                className="lg:hidden fixed inset-0 z-[55]"
+                style={{ backgroundColor: "rgba(0, 0, 0, 0.6)", backdropFilter: "blur(4px)" }}
                 onClick={toggleCollapsed}
               />
               <motion.div
@@ -106,16 +114,25 @@ export function AppSidebar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="lg:hidden fixed bottom-24 right-4 left-4 sm:left-auto sm:right-6 sm:w-[320px] rounded-3xl border border-white/10 bg-black/80 backdrop-blur-2xl p-4 space-y-3 z-50 shadow-2xl shadow-violet-500/20"
+                className="lg:hidden fixed bottom-24 right-4 left-4 sm:left-auto sm:right-6 sm:w-[320px] rounded-3xl backdrop-blur-2xl p-4 space-y-3 z-[58] shadow-2xl"
+                style={{
+                  borderWidth: "1px",
+                  borderColor: "var(--border-muted)",
+                  backgroundColor: "var(--bg-elevated)",
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                }}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">
+                    <p 
+                      className="text-[10px] uppercase tracking-[0.35em]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       Menu
                     </p>
                     <p
-                      className="text-lg font-serif text-white"
-                      style={{ fontFamily: '"Playfair Display", serif' }}
+                      className="text-lg font-serif"
+                      style={{ fontFamily: '"Playfair Display", serif', color: "var(--text-primary)" }}
                     >
                       ModelLink
                     </p>
@@ -123,7 +140,8 @@ export function AppSidebar() {
                   <button
                     onClick={toggleCollapsed}
                     aria-label="Close menu"
-                    className="p-2 rounded-2xl text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                    className="p-2 rounded-2xl transition-colors"
+                    style={{ color: "var(--text-muted)" }}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -137,12 +155,12 @@ export function AppSidebar() {
                   return (
                     <div key={`mobile-${item.label}`} className="space-y-1">
                       <div
-                        className={cn(
-                          "flex items-center justify-between rounded-2xl border px-3.5 py-2.5 text-sm transition-colors",
-                          active
-                            ? "border-white/30 bg-white/[0.08] text-white"
-                            : "border-white/10 text-white/70 hover:border-white/30 hover:text-white"
-                        )}
+                        className="flex items-center justify-between rounded-2xl border px-3.5 py-2.5 text-sm transition-colors"
+                        style={{
+                          borderColor: active ? "var(--border-muted)" : "var(--border-subtle)",
+                          backgroundColor: active ? "rgba(107, 46, 143, 0.1)" : "transparent",
+                          color: active ? "var(--text-primary)" : "var(--text-secondary)",
+                        }}
                       >
                         <Link
                           to={item.to}
@@ -150,10 +168,11 @@ export function AppSidebar() {
                           className="flex items-center gap-2 flex-1"
                         >
                           <div
-                            className={cn(
-                              "p-1.5 rounded-xl",
-                              active ? "bg-white/15 text-white" : "bg-white/5 text-white/70"
-                            )}
+                            className="p-1.5 rounded-xl"
+                            style={{
+                              backgroundColor: active ? "rgba(107, 46, 143, 0.15)" : "rgba(107, 46, 143, 0.05)",
+                              color: active ? "var(--text-primary)" : "var(--text-secondary)",
+                            }}
                           >
                             {item.icon}
                           </div>
@@ -163,7 +182,8 @@ export function AppSidebar() {
                           <button
                             onClick={toggleCreatorHub}
                             aria-label="Toggle Creator Hub submenu"
-                            className="p-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                            className="p-1.5 rounded-xl transition-colors"
+                            style={{ color: "var(--text-muted)" }}
                           >
                             <ChevronDown
                               className={cn(
@@ -190,12 +210,11 @@ export function AppSidebar() {
                                   key={`mobile-${child.href}`}
                                   to={child.href}
                                   onClick={handleNavClick}
-                                  className={cn(
-                                    "flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors",
-                                    isRouteActive(child.href)
-                                      ? "bg-white/10 text-white"
-                                      : "text-white/60 hover:text-white hover:bg-white/5"
-                                  )}
+                                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors"
+                                  style={{
+                                    backgroundColor: isRouteActive(child.href) ? "rgba(107, 46, 143, 0.1)" : "transparent",
+                                    color: isRouteActive(child.href) ? "var(--text-primary)" : "var(--text-muted)",
+                                  }}
                                 >
                                   <ChildIcon className="w-3.5 h-3.5" />
                                   {child.label}
@@ -208,19 +227,33 @@ export function AppSidebar() {
                     </div>
                   );
                 })}
-                <div className="border-t border-white/10 pt-3">
+                <div 
+                  className="pt-3"
+                  style={{ borderTop: "1px solid var(--border-subtle)" }}
+                >
                   <Link
                     to="/linda"
                     onClick={handleNavClick}
-                    className="flex items-center justify-between rounded-2xl border border-white/15 bg-gradient-to-r from-violet-500/30 to-blue-500/30 px-4 py-3 text-white transition-colors hover:border-white/30"
+                    className="flex items-center justify-between rounded-2xl border px-4 py-3 transition-colors"
+                    style={{
+                      borderColor: "var(--border-muted)",
+                      background: "linear-gradient(135deg, rgba(107, 46, 143, 0.2), rgba(58, 15, 93, 0.2))",
+                      color: "var(--text-primary)",
+                    }}
                   >
                     <div className="flex items-center gap-2 text-sm font-semibold">
-                      <div className="p-2 rounded-xl bg-white/15 text-white/90">
+                      <div 
+                        className="p-2 rounded-xl"
+                        style={{ backgroundColor: "rgba(107, 46, 143, 0.2)", color: "var(--accent-primary)" }}
+                      >
                         <Sparkles className="w-4 h-4" />
                       </div>
                       Ask Linda
                     </div>
-                    <span className="text-xs text-white/70 italic">AI</span>
+                    <span 
+                      className="text-xs italic"
+                      style={{ color: "var(--text-muted)" }}
+                    >AI</span>
                   </Link>
                 </div>
               </motion.div>

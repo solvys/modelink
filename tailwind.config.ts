@@ -13,6 +13,18 @@ const config: Config = {
         "cursive-tertiary": ["Allura", "cursive"],
       },
       colors: {
+        // Theme-aware colors via CSS variables
+        "theme-bg": "var(--bg-base)",
+        "theme-card": "var(--bg-card)",
+        "theme-elevated": "var(--bg-elevated)",
+        "theme-input": "var(--bg-input)",
+        "theme-border": "var(--border-subtle)",
+        "theme-border-muted": "var(--border-muted)",
+        "theme-text": "var(--text-primary)",
+        "theme-text-secondary": "var(--text-secondary)",
+        "theme-text-muted": "var(--text-muted)",
+        "theme-accent": "var(--accent-primary)",
+        "theme-accent-secondary": "var(--accent-secondary)",
         beige: {
           DEFAULT: "#F5F5DC",
           light: "#FAFAF0",

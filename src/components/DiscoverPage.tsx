@@ -46,8 +46,8 @@ type MetricKey = "briefs" | "ideas" | "alerts";
 
 const discoverStats: { key: MetricKey; label: string; value: string; icon: LucideIcon }[] = [
   { key: "briefs", label: "Briefs synced", value: "42", icon: Database },
-  { key: "ideas", label: "Content ideas queued", value: "9", icon: Lightbulb },
-  { key: "alerts", label: "Industry alerts", value: "3", icon: Activity },
+  { key: "ideas", label: "Ideas queued", value: "9", icon: Lightbulb },
+  { key: "alerts", label: "Alerts", value: "3", icon: Activity },
 ];
 
 type Timeframe = "day" | "week" | "month" | "year";
@@ -141,22 +141,23 @@ export function DiscoverPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 lg:px-8 space-y-10">
+      <div className="w-full max-w-[764px] lg:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 lg:space-y-10">
+        {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <p className="text-sm uppercase tracking-wide text-white/40">Research Deck</p>
-          <h1 className="text-3xl lg:text-4xl font-bold text-white">Discover</h1>
-          <p className="text-white/60 mt-2 max-w-2xl">
+          <p className="text-xs sm:text-sm uppercase tracking-wide text-white/40">Research Deck</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Discover</h1>
+          <p className="text-white/60 mt-2 max-w-2xl text-sm lg:text-base">
             Modeling data and content intelligence sourced from partners like Launchmetrics,
-            Tagger, and internal booking APIs. Plug the prompts below directly into your creative
-            workflow.
+            Tagger, and internal booking APIs.
           </p>
         </motion.div>
 
+        {/* Stats Grid - Single column on mobile, 3 columns on tablet+ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid gap-4 md:grid-cols-3"
+          className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3"
         >
           {discoverStats.map((stat) => {
             const Icon = stat.icon;
@@ -168,34 +169,35 @@ export function DiscoverPage() {
                   setSelectedMetric(stat.key);
                   setSelectedTimeframe("week");
                 }}
-                className="rounded-2xl border border-white/10 bg-transparent p-4 flex items-center gap-3 text-left hover:border-white/30 hover:bg-white/10 transition-colors"
+                className="rounded-2xl border border-white/10 bg-transparent p-4 flex items-center gap-3 text-left hover:border-white/30 hover:bg-white/10 transition-colors w-full"
               >
-                <div className="p-2 rounded-xl bg-white/10 text-white">
+                <div className="p-2 rounded-xl bg-white/10 text-white flex-shrink-0">
                   <Icon className="w-4 h-4" />
                 </div>
-                <div>
-                  <p className="text-2xl font-semibold text-white">{stat.value}</p>
-                  <p className="text-xs uppercase tracking-wide text-white/50">{stat.label}</p>
+                <div className="min-w-0">
+                  <p className="text-xl sm:text-2xl font-semibold text-white">{stat.value}</p>
+                  <p className="text-[10px] sm:text-xs uppercase tracking-wide text-white/50 truncate">{stat.label}</p>
                 </div>
               </button>
             );
           })}
         </motion.div>
 
-        <section className="grid lg:grid-cols-2 gap-6">
+        {/* Content Ideas & Calendar - Stack on mobile */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-3xl border border-white/10 bg-transparent p-6 space-y-4"
+            className="rounded-2xl lg:rounded-3xl border border-white/10 bg-transparent p-4 sm:p-6 space-y-4"
           >
             <div className="flex items-center gap-2">
-              <Lightbulb className="w-4 h-4 text-amber-300" />
-              <h2 className="text-lg font-semibold text-white">Trending Content Ideas</h2>
+              <Lightbulb className="w-4 h-4 text-amber-300 flex-shrink-0" />
+              <h2 className="text-base sm:text-lg font-semibold text-white">Trending Content Ideas</h2>
             </div>
             {contentIdeas.map((idea) => (
-              <div key={idea.title} className="rounded-2xl border border-white/10 p-4 bg-transparent space-y-2">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold text-white">{idea.title}</p>
+              <div key={idea.title} className="rounded-xl lg:rounded-2xl border border-white/10 p-3 sm:p-4 bg-transparent space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
+                  <p className="font-semibold text-white text-sm sm:text-base">{idea.title}</p>
                   <span className="text-xs text-white/50">{idea.format}</span>
                 </div>
                 <p className="text-sm text-white/70">{idea.hook}</p>
@@ -208,36 +210,37 @@ export function DiscoverPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="rounded-3xl border border-white/10 bg-transparent p-6 space-y-4"
+            className="rounded-2xl lg:rounded-3xl border border-white/10 bg-transparent p-4 sm:p-6 space-y-4"
           >
             <div className="flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-violet-300" />
-              <h2 className="text-lg font-semibold text-white">Content Calendar</h2>
+              <CalendarDays className="w-4 h-4 text-violet-300 flex-shrink-0" />
+              <h2 className="text-base sm:text-lg font-semibold text-white">Content Calendar</h2>
             </div>
             {calendarBeats.map((beat) => (
               <div
                 key={beat.date}
-                className="flex items-center justify-between rounded-2xl border border-white/10 p-4 bg-transparent"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl lg:rounded-2xl border border-white/10 p-3 sm:p-4 bg-transparent"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-white">{beat.focus}</p>
-                  <p className="text-xs text-white/50">{beat.action}</p>
+                  <p className="text-xs text-white/50 truncate">{beat.action}</p>
                 </div>
-                <span className="text-white/60 text-sm">{beat.date}</span>
+                <span className="text-white/60 text-xs sm:text-sm flex-shrink-0">{beat.date}</span>
               </div>
             ))}
           </motion.div>
         </section>
 
-        <section className="grid lg:grid-cols-5 gap-6">
+        {/* Industry Insights & Signal Tags - Stack on mobile */}
+        <section className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-3 rounded-3xl border border-white/10 bg-transparent p-6"
+            className="lg:col-span-3 rounded-2xl lg:rounded-3xl border border-white/10 bg-transparent p-4 sm:p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <Activity className="w-4 h-4 text-emerald-300" />
-              <h2 className="text-lg font-semibold text-white">Industry Insights</h2>
+              <Activity className="w-4 h-4 text-emerald-300 flex-shrink-0" />
+              <h2 className="text-base sm:text-lg font-semibold text-white">Industry Insights</h2>
             </div>
             <div className="space-y-4">
               {[
@@ -247,8 +250,8 @@ export function DiscoverPage() {
               ].map((insight) => (
                 <div key={insight.label}>
                   <div className="flex items-center justify-between text-sm text-white/70">
-                    <p>{insight.label}</p>
-                    <span className="text-emerald-300">{insight.change}</span>
+                    <p className="truncate">{insight.label}</p>
+                    <span className="text-emerald-300 flex-shrink-0 ml-2">{insight.change}</span>
                   </div>
                   <div className="mt-2 h-2 rounded-full bg-white/10">
                     <div
@@ -263,20 +266,20 @@ export function DiscoverPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-2 rounded-3xl border border-white/10 bg-transparent p-6"
+            className="lg:col-span-2 rounded-2xl lg:rounded-3xl border border-white/10 bg-transparent p-4 sm:p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-violet-300" />
-              <h2 className="text-lg font-semibold text-white">Signal Tags</h2>
+              <TrendingUp className="w-4 h-4 text-violet-300 flex-shrink-0" />
+              <h2 className="text-base sm:text-lg font-semibold text-white">Signal Tags</h2>
             </div>
             <div className="space-y-3">
               {mockHashtags.slice(0, 6).map((tag) => (
                 <div key={tag.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-white/80">
-                    <Hash className="w-4 h-4 text-white/40" />
-                    {tag.name}
+                  <div className="flex items-center gap-2 text-white/80 min-w-0">
+                    <Hash className="w-4 h-4 text-white/40 flex-shrink-0" />
+                    <span className="truncate">{tag.name}</span>
                   </div>
-                  <span className="text-xs text-white/40">
+                  <span className="text-xs text-white/40 flex-shrink-0 ml-2">
                     {(tag.postsCount / 1000).toFixed(1)}K
                   </span>
                 </div>
@@ -286,6 +289,7 @@ export function DiscoverPage() {
         </section>
       </div>
 
+      {/* Metric Modal - Mobile-optimized */}
       <AnimatePresence>
         {selectedMetricData && (
           <>
@@ -299,28 +303,29 @@ export function DiscoverPage() {
             />
             <motion.div
               key="discover-chart-modal"
-              className="fixed inset-0 z-50 flex items-center justify-center px-4"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed inset-x-0 bottom-0 sm:inset-0 z-50 sm:flex sm:items-center sm:justify-center sm:px-4"
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
             >
-              <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-[#0e0d13] p-6 shadow-2xl">
+              <div className="w-full sm:max-w-xl rounded-t-3xl sm:rounded-3xl border border-white/10 bg-[--bg-base] sm:bg-[#0e0d13] p-4 sm:p-6 shadow-2xl max-h-[85vh] sm:max-h-none overflow-y-auto">
                 <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/40">Trendline</p>
-                    <h3 className="text-2xl font-semibold text-white mt-1">
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-white/40">Trendline</p>
+                    <h3 className="text-xl sm:text-2xl font-semibold text-white mt-1 truncate">
                       {selectedMetricData.label}
                     </h3>
-                    <p className="text-sm text-white/50">
+                    <p className="text-xs sm:text-sm text-white/50">
                       {chartCurrent} {selectedMetricData.unit} · {selectedTimeframe}
                     </p>
                   </div>
                   <button
                     onClick={closeMetricModal}
-                    className="p-2 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                    className="p-2 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
                     aria-label="Close metric chart"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
 
@@ -330,7 +335,7 @@ export function DiscoverPage() {
                       key={frame}
                       onClick={() => setSelectedTimeframe(frame)}
                       className={cn(
-                        "px-3 py-1.5 rounded-full border transition-colors",
+                        "px-3 py-1.5 rounded-full border transition-colors capitalize",
                         selectedTimeframe === frame
                           ? "bg-white text-gray-900 border-white"
                           : "border-white/20 text-white/60 hover:text-white hover:border-white/40"
@@ -341,11 +346,11 @@ export function DiscoverPage() {
                   ))}
                 </div>
 
-                <div className="mt-6 rounded-2xl border border-white/10 bg-transparent p-4">
+                <div className="mt-6 rounded-2xl border border-white/10 bg-transparent p-3 sm:p-4">
                   <svg
                     viewBox="0 0 100 100"
                     preserveAspectRatio="none"
-                    className="w-full h-40 text-violet-200"
+                    className="w-full h-32 sm:h-40 text-violet-200"
                   >
                     <defs>
                       <linearGradient id="discover-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -372,19 +377,19 @@ export function DiscoverPage() {
                       />
                     ))}
                   </svg>
-                  <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs text-white/60">
-                    <div className="rounded-xl bg-transparent p-3">
-                      <p className="text-[11px] uppercase tracking-wide">Current</p>
-                      <p className="text-lg font-semibold text-white">{chartCurrent}</p>
+                  <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3 text-center text-xs text-white/60">
+                    <div className="rounded-xl bg-white/5 p-2 sm:p-3">
+                      <p className="text-[10px] uppercase tracking-wide">Current</p>
+                      <p className="text-base sm:text-lg font-semibold text-white">{chartCurrent}</p>
                     </div>
-                    <div className="rounded-xl bg-transparent p-3">
-                      <p className="text-[11px] uppercase tracking-wide">Average</p>
-                      <p className="text-lg font-semibold text-white">{chartAverage}</p>
+                    <div className="rounded-xl bg-white/5 p-2 sm:p-3">
+                      <p className="text-[10px] uppercase tracking-wide">Average</p>
+                      <p className="text-base sm:text-lg font-semibold text-white">{chartAverage}</p>
                     </div>
-                    <div className="rounded-xl bg-transparent p-3">
-                      <p className="text-[11px] uppercase tracking-wide">Range</p>
-                      <p className="text-lg font-semibold text-white">
-                        {chartMin} – {chartMax}
+                    <div className="rounded-xl bg-white/5 p-2 sm:p-3">
+                      <p className="text-[10px] uppercase tracking-wide">Range</p>
+                      <p className="text-base sm:text-lg font-semibold text-white">
+                        {chartMin}–{chartMax}
                       </p>
                     </div>
                   </div>
@@ -397,4 +402,3 @@ export function DiscoverPage() {
     </div>
   );
 }
-

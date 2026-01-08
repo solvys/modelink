@@ -39,7 +39,7 @@ function ModelProfile() {
   const agency = getAgencyById(model.agencyId);
 
   return (
-    <div className="min-h-screen bg-[--bg-base] text-white">
+    <div className="min-h-screen bg-[--bg-base]" style={{ color: "var(--text-primary)" }}>
       {/* Background Accents */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-violet-500/5 rounded-full blur-[150px]" />
@@ -48,14 +48,14 @@ function ModelProfile() {
 
       {/* Header */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-gray-950/80 border-b border-white/[0.06]">
-        <div className="max-w-5xl mx-auto px-6 py-4">
+        <div className="w-full max-w-[764px] lg:max-w-5xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <Link
               to="/"
               className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back</span>
+              <span className="hidden sm:inline">Back</span>
             </Link>
             {agency?.logo && (
               <Link to={`/agencies/${agency.slug}`}>
@@ -70,31 +70,31 @@ function ModelProfile() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
+      <main className="w-full max-w-[764px] lg:max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 overflow-x-hidden">
         {/* Profile Intro Card */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-16"
         >
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-start">
             {/* Profile Photo */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 w-full sm:w-auto">
               <img
                 src={model.profilePhoto}
                 alt={model.name}
-                className="w-48 h-64 lg:w-64 lg:h-80 rounded-2xl object-cover"
+                className="w-full sm:w-48 h-64 lg:w-64 lg:h-80 rounded-2xl object-cover"
               />
             </div>
 
             {/* Info */}
-            <div className="flex-1">
-              <div className="mb-6">
-                <h1 className="text-4xl lg:text-5xl font-bold mb-2">{model.name}</h1>
+            <div className="flex-1 w-full min-w-0">
+              <div className="mb-4 sm:mb-6">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">{model.name}</h1>
                 {agency && (
                   <Link
                     to={`/agencies/${agency.slug}`}
-                    className="text-white/60 hover:text-white transition-colors"
+                    className="text-white/60 hover:text-white transition-colors text-sm sm:text-base"
                   >
                     Represented by {agency.name}
                   </Link>
@@ -102,7 +102,7 @@ function ModelProfile() {
               </div>
 
               {/* Stats Cards Grid */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
                 {/* BWH Combined Card */}
                 <BWHCard
                   bust={model.stats.bust}
@@ -136,7 +136,7 @@ function ModelProfile() {
               {/* CTA */}
               <button
                 onClick={() => setBookingOpen(true)}
-                className="flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-gray-900 font-semibold hover:bg-white/90 transition-colors"
+                className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-white text-gray-900 font-semibold hover:bg-white/90 transition-colors"
               >
                 <Calendar className="w-5 h-5" />
                 Book Now
@@ -218,8 +218,8 @@ function ModelProfile() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.06] mt-16">
-        <div className="max-w-5xl mx-auto px-6 py-8">
+      <footer className="border-t border-white/[0.06] mt-12 sm:mt-16">
+        <div className="w-full max-w-[764px] lg:max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {agency?.logo && (
               <img

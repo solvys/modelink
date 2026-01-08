@@ -39,8 +39,8 @@ export function LindaChat({ variant = "mini" }: LindaChatProps) {
   const containerClasses = useMemo(
     () =>
       cn(
-        "flex h-full flex-col rounded-2xl border border-white/10 bg-[--bg-input]",
-        variant === "mini" ? "p-3" : "p-6"
+        "flex h-full flex-col rounded-2xl border border-white/10 bg-[--bg-input] w-full min-w-0",
+        variant === "mini" ? "p-3" : "p-4 sm:p-6"
       ),
     [variant]
   );
@@ -100,14 +100,14 @@ export function LindaChat({ variant = "mini" }: LindaChatProps) {
         </div>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 py-4 pr-1">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 py-3 sm:py-4 pr-1">
         {messages.map((message) => (
           <motion.div
             key={message.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-              "rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-[90%]",
+              "rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm leading-relaxed max-w-[90%]",
               message.role === "assistant"
                 ? "bg-white/5 text-white/80"
                 : "ml-auto bg-white text-gray-900"
@@ -125,13 +125,13 @@ export function LindaChat({ variant = "mini" }: LindaChatProps) {
       </div>
 
       {variant === "mini" && (
-        <div className="pb-2">
-          <div className="flex flex-wrap gap-2">
+        <div className="pb-2 -mx-3 sm:mx-0">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide px-3 sm:px-0">
             {quickPrompts.map((prompt) => (
               <button
                 key={prompt}
                 onClick={() => handleSend(prompt)}
-                className="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-colors"
+                className="text-[10px] sm:text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/30 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 {prompt}
               </button>
@@ -151,12 +151,12 @@ export function LindaChat({ variant = "mini" }: LindaChatProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask anything..."
-          className="flex-1 bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+          className="flex-1 bg-transparent text-xs sm:text-sm text-white placeholder:text-white/40 focus:outline-none min-w-0"
         />
         <button
           type="submit"
           disabled={!input.trim() || isStreaming}
-          className="p-2 rounded-lg bg-white text-gray-900 hover:bg-white/90 transition-colors disabled:opacity-40"
+          className="p-2 rounded-lg bg-white text-gray-900 hover:bg-white/90 transition-colors disabled:opacity-40 flex-shrink-0"
         >
           <SendHorizonal className="w-4 h-4" />
         </button>

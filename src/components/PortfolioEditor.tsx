@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   GripVertical,
   Plus,
@@ -26,6 +27,8 @@ import {
   Star,
   Check,
   Tag,
+  X,
+  Wrench,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -241,6 +244,16 @@ export function PortfolioEditor() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
+  // Mobile-specific state
+  const [isMounted, setIsMounted] = useState(false);
+  const [toolkitExpanded, setToolkitExpanded] = useState(false);
+  const [activePopup, setActivePopup] = useState<EditorTab | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
   const moveSection = (index: number, direction: "up" | "down") => {
     const newSections = [...sections];
     const targetIndex = direction === "up" ? index - 1 : index + 1;
@@ -417,46 +430,756 @@ export function PortfolioEditor() {
       })
     : "Not published yet";
 
+  const openToolkitPopup = (tabId: EditorTab) => {
+    setActivePopup(tabId);
+    setToolkitExpanded(false);
+  };
+
+  const closeToolkitPopup = () => {
+    setActivePopup(null);
+  };
+
+  // Render tab content (reusable for both desktop and mobile)
+  const renderTabContent = (tabId: EditorTab) => {
+    switch (tabId) {
+      case "sections":
+        return (
+          <div className="space-y-3">
+            {sections.map((section, index) => (
+              <div
+                key={section.id}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-xl bg-[--bg-input] border border-white/[0.04] transition-opacity",
+                  !section.visible && "opacity-50"
+                )}
+              >
+                <GripVertical className="w-4 h-4 text-white/30 cursor-grab" />
+                <span className="flex-1 text-sm text-white font-medium">
+                  {section.name}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => moveSection(index, "up")}
+                    disabled={index === 0}
+                    className="p-1 rounded text-white/40 hover:text-white disabled:opacity-30"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => moveSection(index, "down")}
+                    disabled={index === sections.length - 1}
+                    className="p-1 rounded text-white/40 hover:text-white disabled:opacity-30"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => toggleVisibility(section.id)}
+                    className="p-1 rounded text-white/40 hover:text-white"
+                  >
+                    {section.visible ? (
+                      <Eye className="w-4 h-4" />
+                    ) : (
+                      <EyeOff className="w-4 h-4" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => removeSection(section.id)}
+                    className="p-1 rounded text-white/40 hover:text-rose-400"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <button className="flex items-center justify-center gap-2 w-full p-3 rounded-xl border border-dashed border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-colors">
+              <Plus className="w-4 h-4" /> Add Section
+            </button>
+          </div>
+        );
+      case "typography":
+        return (
+          <div className="space-y-4">
+            <p className="text-sm text-white/50">
+              Choose a font for your portfolio
+            </p>
+            <div className="space-y-2">
+              {fonts.map((font) => (
+                <button
+                  key={font.id}
+                  onClick={() => setSelectedFont(font.id)}
+                  className={cn(
+                    "w-full p-4 rounded-xl text-left transition-all",
+                    selectedFont === font.id
+                      ? "bg-white text-gray-900"
+                      : "bg-[--bg-input] text-white hover:bg-white/[0.05]",
+                    font.class
+                  )}
+                >
+                  <span className="text-lg">{font.name}</span>
+                  <p
+                    className={cn(
+                      "text-sm mt-1",
+                      selectedFont === font.id
+                        ? "text-gray-600"
+                        : "text-white/40"
+                    )}
+                  >
+                    The quick brown fox jumps
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      case "colors":
+        return (
+          <div className="space-y-6">
+            <div>
+              <p className="text-sm text-white/50 mb-3">Color Presets</p>
+              <div className="grid grid-cols-5 gap-2">
+                {colorPresets.map((preset) => (
+                  <button
+                    key={preset.id}
+                    onClick={() => {
+                      setSelectedPreset(preset.id);
+                      setCustomColors({
+                        primary: preset.primary,
+                        secondary: preset.secondary,
+                        accent: preset.accent,
+                      });
+                    }}
+                    className={cn(
+                      "aspect-square rounded-xl transition-all",
+                      selectedPreset === preset.id
+                        ? "ring-2 ring-white ring-offset-2 ring-offset-[#0a0a0a]"
+                        : ""
+                    )}
+                    style={{ backgroundColor: preset.primary }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-sm text-white/50">Custom Colors</p>
+              {(["primary", "secondary", "accent"] as const).map((key) => (
+                <div key={key} className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={customColors[key]}
+                    onChange={(e) =>
+                      setCustomColors((prev) => ({
+                        ...prev,
+                        [key]: e.target.value,
+                      }))
+                    }
+                    className="w-10 h-10 rounded-lg cursor-pointer border-0"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white capitalize">
+                      {key}
+                    </p>
+                    <p className="text-xs text-white/40 uppercase">
+                      {customColors[key]}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "media":
+        return (
+          <div className="space-y-4">
+            <div
+              className="rounded-2xl border border-dashed border-white/15 bg-black/10 p-4 text-center text-white/70 cursor-pointer hover:border-white/40 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <UploadCloud className="w-6 h-6 mx-auto mb-2 text-white/60" />
+              <p className="text-sm font-semibold text-white">Drag & drop assets</p>
+              <p className="text-xs text-white/50">PNG, JPG or WebP • up to 25MB each</p>
+              <button className="mt-3 inline-flex items-center gap-2 rounded-full bg-white text-gray-900 px-4 py-1.5 text-xs font-semibold">
+                <Plus className="w-3 h-3" />
+                Upload files
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(event) => {
+                  void handleMediaUpload(event.target.files);
+                  event.target.value = "";
+                }}
+              />
+            </div>
+
+            <div className="space-y-3 max-h-[320px] lg:max-h-[420px] overflow-y-auto pr-1">
+              {mediaLibrary.length === 0 && (
+                <p className="text-sm text-white/60 text-center py-6">
+                  Upload imagery to start building your studio library.
+                </p>
+              )}
+              {mediaLibrary.map((asset) => (
+                <div
+                  key={asset.id}
+                  className="rounded-2xl border border-white/10 bg-[--bg-input] overflow-hidden"
+                >
+                  <div className="relative h-28 lg:h-36">
+                    <img
+                      src={asset.url}
+                      alt={asset.label}
+                      className="w-full h-full object-cover"
+                    />
+                    {asset.featured && (
+                      <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-amber-500/90 px-2 py-0.5 text-[11px] font-semibold text-gray-900">
+                        <Star className="w-3 h-3" fill="currentColor" />
+                        Spotlight
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-3 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold text-white">{asset.label}</p>
+                        <p className="text-xs text-white/50 flex items-center gap-1 mt-0.5">
+                          <Tag className="w-3 h-3" />
+                          {asset.sectionId
+                            ? sections.find((section) => section.id === asset.sectionId)?.name
+                            : "Unassigned"}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => removeAsset(asset.id)}
+                        className="p-1 rounded-full text-white/60 hover:text-rose-300 hover:bg-white/10 transition-colors"
+                        aria-label="Remove asset"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div>
+                      <label className="text-[11px] uppercase tracking-wide text-white/40 mb-1 block">
+                        Assign to section
+                      </label>
+                      <select
+                        value={asset.sectionId ?? ""}
+                        onChange={(e) => assignAssetToSection(asset.id, e.target.value)}
+                        className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/80 focus:border-white/50 outline-none"
+                      >
+                        <option value="">Unassigned</option>
+                        {sectionOptions.map((section) => (
+                          <option key={section.id} value={section.id}>
+                            {section.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={() => toggleFeaturedAsset(asset.id)}
+                      className={cn(
+                        "w-full flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors",
+                        asset.featured
+                          ? "border-amber-300/70 text-amber-200"
+                          : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"
+                      )}
+                    >
+                      <Star
+                        className="w-4 h-4"
+                        fill={asset.featured ? "currentColor" : "none"}
+                      />
+                      {asset.featured ? "Featured visual" : "Mark as featured"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "layouts":
+        return (
+          <div className="space-y-3 max-h-[320px] lg:max-h-[430px] overflow-y-auto pr-1">
+            {templateLibrary.map((template) => (
+              <div
+                key={template.id}
+                className={cn(
+                  "rounded-2xl border p-4 space-y-3 transition-colors",
+                  selectedTemplateId === template.id
+                    ? "border-white/40 bg-white/10"
+                    : "border-white/10 bg-white/5"
+                )}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-base font-semibold text-white">{template.name}</p>
+                    <p className="text-xs text-white/60 mt-1">{template.description}</p>
+                  </div>
+                  {template.badge && (
+                    <span className="rounded-full border border-white/20 px-2 py-0.5 text-[11px] uppercase tracking-wide text-white/80">
+                      {template.badge}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5 text-[11px] uppercase text-white/50">
+                  {template.sections.map((section) => (
+                    <span
+                      key={`${template.id}-${section.id}`}
+                      className="rounded-full border border-white/15 px-2 py-0.5"
+                    >
+                      {section.name}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  onClick={() => handleApplyTemplate(template.id)}
+                  className={cn(
+                    "w-full rounded-xl px-4 py-2 text-sm font-semibold transition-colors",
+                    selectedTemplateId === template.id
+                      ? "bg-white text-gray-900"
+                      : "border border-white/15 text-white/80 hover:border-white/40"
+                  )}
+                >
+                  {selectedTemplateId === template.id ? "Template Active" : "Use Template"}
+                </button>
+              </div>
+            ))}
+          </div>
+        );
+      case "animations":
+        return (
+          <div className="space-y-5">
+            <div>
+              <p className="text-sm text-white/60 mb-2">Entrance preset</p>
+              <div className="grid grid-cols-3 gap-2">
+                {(["fade", "slide", "zoom"] as const).map((preset) => (
+                  <button
+                    key={preset}
+                    onClick={() => handleAnimationSettingChange("preset", preset)}
+                    className={cn(
+                      "rounded-xl border px-3 py-2 text-sm font-semibold capitalize transition-colors",
+                      animationSettings.preset === preset
+                        ? "bg-white text-gray-900"
+                        : "border-white/15 text-white/70 hover:border-white/40"
+                    )}
+                  >
+                    {preset}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-xs uppercase tracking-wide text-white/40">
+                Duration ({animationSettings.duration.toFixed(1)}s)
+              </label>
+              <input
+                type="range"
+                min={0.3}
+                max={1.2}
+                step={0.1}
+                value={animationSettings.duration}
+                onChange={(e) =>
+                  handleAnimationSettingChange("duration", parseFloat(e.target.value))
+                }
+                className="w-full"
+              />
+              <label className="text-xs uppercase tracking-wide text-white/40">
+                Stagger ({animationSettings.delay.toFixed(2)}s)
+              </label>
+              <input
+                type="range"
+                min={0}
+                max={0.3}
+                step={0.01}
+                value={animationSettings.delay}
+                onChange={(e) =>
+                  handleAnimationSettingChange("delay", parseFloat(e.target.value))
+                }
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs uppercase tracking-wide text-white/40">
+                Easing
+              </label>
+              <select
+                value={animationSettings.easing}
+                onChange={(e) =>
+                  handleAnimationSettingChange("easing", e.target.value as AnimationSettings["easing"])
+                }
+                className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
+              >
+                {easingOptions.map((easing) => (
+                  <option key={easing} value={easing}>
+                    {easing}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-white/40 mb-2">
+                Live Preview
+              </p>
+              <motion.div
+                key={`${animationSettings.preset}-${animationSettings.duration}`}
+                variants={animationVariants[animationSettings.preset]}
+                initial="initial"
+                animate="animate"
+                transition={{
+                  duration: animationSettings.duration,
+                  ease: animationSettings.easing,
+                  delay: animationSettings.delay,
+                }}
+                className="rounded-xl border border-white/10 bg-white/10 p-4 space-y-2"
+              >
+                <p className="text-sm font-semibold text-white">Motion feels ready</p>
+                <p className="text-xs text-white/60">
+                  Sections will animate using this preset and timing on publish.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        );
+      case "seo":
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
+                Meta Title
+              </label>
+              <input
+                value={seoSettings.title}
+                onChange={(e) => handleSeoFieldChange("title", e.target.value)}
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
+                Meta Description
+              </label>
+              <textarea
+                value={seoSettings.description}
+                onChange={(e) => handleSeoFieldChange("description", e.target.value)}
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
+                Portfolio Slug
+              </label>
+              <div className="flex items-center rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white/70">
+                <span className="text-white/40 text-xs mr-2">modelink.com/</span>
+                <input
+                  value={seoSettings.slug}
+                  onChange={(e) => handleSeoFieldChange("slug", e.target.value)}
+                  className="flex-1 bg-transparent text-white text-sm focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
+                Keywords (comma separated)
+              </label>
+              <input
+                value={keywordInputValue}
+                onChange={(e) => handleKeywordInput(e.target.value)}
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs uppercase tracking-wide text-white/40">
+                  Open Graph image
+                </p>
+                <span className="text-[10px] text-white/40">
+                  Uses first media if none selected
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {mediaLibrary.slice(0, 4).map((asset) => (
+                  <button
+                    key={`og-${asset.id}`}
+                    onClick={() => handleSeoFieldChange("ogImage", asset.url)}
+                    className={cn(
+                      "relative h-16 lg:h-20 rounded-2xl overflow-hidden border",
+                      seoSettings.ogImage === asset.url
+                        ? "border-white"
+                        : "border-white/15 hover:border-white/40"
+                    )}
+                  >
+                    <img
+                      src={asset.url}
+                      alt={asset.label}
+                      className="w-full h-full object-cover"
+                    />
+                    {seoSettings.ogImage === asset.url && (
+                      <Check className="absolute top-2 right-2 w-4 h-4 text-white drop-shadow" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-2">
+              <p className="text-xs uppercase tracking-[0.4em] text-white/40">Preview</p>
+              <div className="rounded-xl bg-white text-gray-900 p-3 space-y-1">
+                <p className="text-xs text-gray-500">{publishSettings.previewUrl}</p>
+                <p className="text-sm font-semibold">{seoSettings.title}</p>
+                <p className="text-xs text-gray-600 line-clamp-2">{seoSettings.description}</p>
+                <div className="text-[10px] uppercase tracking-wide text-emerald-600 mt-1">
+                  {seoSettings.keywords.slice(0, 3).join(" • ")}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case "publish":
+        return (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-[--bg-input] p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-white/40">Status</p>
+                <p className="text-sm font-semibold text-white">
+                  {publishSettings.isPublished ? "Live on modelink.com" : "Draft only"}
+                </p>
+                <p className="text-xs text-white/50">{lastPublishedLabel}</p>
+              </div>
+              <button
+                onClick={handlePublishToggle}
+                className={cn(
+                  "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                  publishSettings.isPublished
+                    ? "bg-white text-gray-900"
+                    : "border border-white/20 text-white hover:border-white/40"
+                )}
+              >
+                {publishSettings.isPublished ? "Unpublish" : "Enable live"}
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-white/10 bg-[--bg-input] p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs uppercase tracking-wide text-white/40">Share link</p>
+                    <p className="text-sm text-white truncate">{publishSettings.shareUrl}</p>
+                  </div>
+                  <button
+                    onClick={() => void handleCopyShareUrl()}
+                    className="inline-flex items-center gap-1 rounded-full border border-white/20 px-3 py-1 text-xs text-white/80 hover:border-white/40 transition-colors flex-shrink-0 ml-2"
+                  >
+                    <Link2 className="w-3 h-3" />
+                    {copySuccess ? "Copied" : "Copy"}
+                  </button>
+                </div>
+                <p className="text-xs text-white/50">
+                  Share this preview with clients or collaborators before publishing.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[--bg-input] p-4">
+                <p className="text-xs uppercase tracking-wide text-white/40">Version</p>
+                <p className="text-sm font-semibold text-white">{publishSettings.version}</p>
+                <p className="text-xs text-white/50">
+                  {publishSettings.lastPublishedAt ? "Last shipped" : "Not live yet"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handlePreviewClick}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 hover:border-white/40 transition-colors"
+              >
+                <Share2 className="w-4 h-4" />
+                Open preview
+              </button>
+              <button
+                onClick={handlePublish}
+                disabled={isPublishing}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white text-gray-900 px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60"
+              >
+                <Rocket className="w-4 h-4" />
+                {isPublishing ? "Publishing..." : "Publish to web"}
+              </button>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Mobile Floating Toolkit Buttons and Popup Portal
+  const mobileToolkitPortal =
+    isMounted &&
+    createPortal(
+      <>
+        {/* Floating Toolkit Button */}
+        <motion.button
+          onClick={() => setToolkitExpanded((prev) => !prev)}
+          className="lg:hidden fixed bottom-6 right-6 p-4 rounded-2xl border border-white/15 bg-black/80 backdrop-blur-2xl text-white shadow-2xl shadow-violet-500/20 hover:bg-white/10 transition-colors z-50"
+          whileTap={{ scale: 0.95 }}
+        >
+          {toolkitExpanded ? <X className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
+        </motion.button>
+
+        {/* Expanded Toolkit Menu */}
+        <AnimatePresence>
+          {toolkitExpanded && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+                onClick={() => setToolkitExpanded(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="lg:hidden fixed bottom-24 right-4 left-4 sm:left-auto sm:right-6 sm:w-[320px] rounded-3xl border border-white/10 bg-black/90 backdrop-blur-2xl p-4 z-50 shadow-2xl shadow-violet-500/20"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">
+                      Studio Tools
+                    </p>
+                    <p
+                      className="text-lg font-serif text-white"
+                      style={{ fontFamily: '"Playfair Display", serif' }}
+                    >
+                      Portfolio Toolkit
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setToolkitExpanded(false)}
+                    className="p-2 rounded-2xl text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2">
+                  {tabs.map((tab) => (
+                    <motion.button
+                      key={tab.id}
+                      onClick={() => openToolkitPopup(tab.id)}
+                      className={cn(
+                        "flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-colors",
+                        activeTab === tab.id
+                          ? "border-white/30 bg-white/10 text-white"
+                          : "border-white/[0.06] bg-white/[0.03] text-white/60 hover:text-white hover:border-white/20"
+                      )}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="p-2 rounded-xl bg-white/10">{tab.icon}</div>
+                      <span className="text-[10px] font-medium">{tab.label}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Toolkit Popup Modal */}
+        <AnimatePresence>
+          {activePopup && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="lg:hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
+                onClick={closeToolkitPopup}
+              />
+              <motion.div
+                initial={{ opacity: 0, y: "100%" }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: "100%" }}
+                transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                className="lg:hidden fixed inset-x-0 bottom-0 z-50 max-h-[85vh] rounded-t-3xl border-t border-white/10 bg-[--bg-base] overflow-hidden"
+              >
+                {/* Popup Header */}
+                <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-white/[0.06] bg-[--bg-base]">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-white/10">
+                      {tabs.find((t) => t.id === activePopup)?.icon}
+                    </div>
+                    <span className="text-lg font-semibold text-white">
+                      {tabs.find((t) => t.id === activePopup)?.label}
+                    </span>
+                  </div>
+                  <button
+                    onClick={closeToolkitPopup}
+                    className="p-2 rounded-2xl text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Popup Content */}
+                <div className="p-4 overflow-y-auto max-h-[calc(85vh-72px)]">
+                  {renderTabContent(activePopup)}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </>,
+      document.body
+    );
+
   return (
-    <div className="relative min-h-screen pt-28 pb-16">
+    <div className="relative min-h-screen pt-28 pb-16 lg:pb-16 pb-24">
       {/* Background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
+      <div className="w-full max-w-[764px] lg:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
         >
           <div>
-            <h1 className="text-3xl font-bold text-white">Portfolio Studio</h1>
-            <p className="text-white/60 mt-2">
+            <h1 className="text-2xl lg:text-3xl font-bold text-white">Portfolio Studio</h1>
+            <p className="text-white/60 mt-2 text-sm lg:text-base">
               Customize your public portfolio layout and style
             </p>
           </div>
-          <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+          <div className="flex gap-3 w-full sm:w-auto">
+            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors text-sm">
               <Undo className="w-4 h-4" /> Reset
             </button>
-            <button className="flex items-center gap-2 px-5 py-2 rounded-xl bg-white text-gray-900 font-medium hover:bg-white/90 transition-colors">
-              <Save className="w-4 h-4" /> Save Changes
+            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-gray-900 font-medium hover:bg-white/90 transition-colors text-sm">
+              <Save className="w-4 h-4" /> Save
             </button>
           </div>
         </motion.div>
 
-        <div className="flex gap-8">
-          {/* Editor Panel */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Desktop Editor Panel - Hidden on Mobile */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="w-80 flex-shrink-0"
+            className="hidden lg:block w-80 flex-shrink-0"
           >
             {/* Tabs */}
-            <div className="flex gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -475,591 +1198,27 @@ export function PortfolioEditor() {
             </div>
 
             <div className="bg-transparent border border-white/[0.06] rounded-2xl p-5">
-              {activeTab === "sections" && (
-                <div className="space-y-3">
-                  {sections.map((section, index) => (
-                    <div
-                      key={section.id}
-                      className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl bg-[--bg-input] border border-white/[0.04] transition-opacity",
-                        !section.visible && "opacity-50"
-                      )}
-                    >
-                      <GripVertical className="w-4 h-4 text-white/30 cursor-grab" />
-                      <span className="flex-1 text-sm text-white font-medium">
-                        {section.name}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => moveSection(index, "up")}
-                          disabled={index === 0}
-                          className="p-1 rounded text-white/40 hover:text-white disabled:opacity-30"
-                        >
-                          <ChevronUp className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => moveSection(index, "down")}
-                          disabled={index === sections.length - 1}
-                          className="p-1 rounded text-white/40 hover:text-white disabled:opacity-30"
-                        >
-                          <ChevronDown className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => toggleVisibility(section.id)}
-                          className="p-1 rounded text-white/40 hover:text-white"
-                        >
-                          {section.visible ? (
-                            <Eye className="w-4 h-4" />
-                          ) : (
-                            <EyeOff className="w-4 h-4" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => removeSection(section.id)}
-                          className="p-1 rounded text-white/40 hover:text-rose-400"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-
-                  <button className="flex items-center justify-center gap-2 w-full p-3 rounded-xl border border-dashed border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-colors">
-                    <Plus className="w-4 h-4" /> Add Section
-                  </button>
-                </div>
-              )}
-
-              {activeTab === "typography" && (
-                <div className="space-y-4">
-                  <p className="text-sm text-white/50">
-                    Choose a font for your portfolio
-                  </p>
-                  <div className="space-y-2">
-                    {fonts.map((font) => (
-                      <button
-                        key={font.id}
-                        onClick={() => setSelectedFont(font.id)}
-                        className={cn(
-                          "w-full p-4 rounded-xl text-left transition-all",
-                          selectedFont === font.id
-                            ? "bg-white text-gray-900"
-                            : "bg-[--bg-input] text-white hover:bg-white/[0.05]",
-                          font.class
-                        )}
-                      >
-                        <span className="text-lg">{font.name}</span>
-                        <p
-                          className={cn(
-                            "text-sm mt-1",
-                            selectedFont === font.id
-                              ? "text-gray-600"
-                              : "text-white/40"
-                          )}
-                        >
-                          The quick brown fox jumps
-                        </p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "colors" && (
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-sm text-white/50 mb-3">Color Presets</p>
-                    <div className="grid grid-cols-5 gap-2">
-                      {colorPresets.map((preset) => (
-                        <button
-                          key={preset.id}
-                          onClick={() => {
-                            setSelectedPreset(preset.id);
-                            setCustomColors({
-                              primary: preset.primary,
-                              secondary: preset.secondary,
-                              accent: preset.accent,
-                            });
-                          }}
-                          className={cn(
-                            "aspect-square rounded-xl transition-all",
-                            selectedPreset === preset.id
-                              ? "ring-2 ring-white ring-offset-2 ring-offset-[#0a0a0a]"
-                              : ""
-                          )}
-                          style={{ backgroundColor: preset.primary }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <p className="text-sm text-white/50">Custom Colors</p>
-                    {(["primary", "secondary", "accent"] as const).map((key) => (
-                      <div key={key} className="flex items-center gap-3">
-                        <input
-                          type="color"
-                          value={customColors[key]}
-                          onChange={(e) =>
-                            setCustomColors((prev) => ({
-                              ...prev,
-                              [key]: e.target.value,
-                            }))
-                          }
-                          className="w-10 h-10 rounded-lg cursor-pointer border-0"
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-white capitalize">
-                            {key}
-                          </p>
-                          <p className="text-xs text-white/40 uppercase">
-                            {customColors[key]}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "media" && (
-                <div className="space-y-4">
-                  <div
-                    className="rounded-2xl border border-dashed border-white/15 bg-black/10 p-4 text-center text-white/70 cursor-pointer hover:border-white/40 transition-colors"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <UploadCloud className="w-6 h-6 mx-auto mb-2 text-white/60" />
-                    <p className="text-sm font-semibold text-white">Drag & drop assets</p>
-                    <p className="text-xs text-white/50">PNG, JPG or WebP • up to 25MB each</p>
-                    <button className="mt-3 inline-flex items-center gap-2 rounded-full bg-white text-gray-900 px-4 py-1.5 text-xs font-semibold">
-                      <Plus className="w-3 h-3" />
-                      Upload files
-                    </button>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={(event) => {
-                        void handleMediaUpload(event.target.files);
-                        event.target.value = "";
-                      }}
-                    />
-                  </div>
-
-                  <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
-                    {mediaLibrary.length === 0 && (
-                      <p className="text-sm text-white/60 text-center py-6">
-                        Upload imagery to start building your studio library.
-                      </p>
-                    )}
-                    {mediaLibrary.map((asset) => (
-                      <div
-                        key={asset.id}
-                        className="rounded-2xl border border-white/10 bg-[--bg-input] overflow-hidden"
-                      >
-                        <div className="relative h-36">
-                          <img
-                            src={asset.url}
-                            alt={asset.label}
-                            className="w-full h-full object-cover"
-                          />
-                          {asset.featured && (
-                            <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-amber-500/90 px-2 py-0.5 text-[11px] font-semibold text-gray-900">
-                              <Star className="w-3 h-3" fill="currentColor" />
-                              Spotlight
-                            </span>
-                          )}
-                        </div>
-                        <div className="p-3 space-y-3">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <p className="text-sm font-semibold text-white">{asset.label}</p>
-                              <p className="text-xs text-white/50 flex items-center gap-1 mt-0.5">
-                                <Tag className="w-3 h-3" />
-                                {asset.sectionId
-                                  ? sections.find((section) => section.id === asset.sectionId)?.name
-                                  : "Unassigned"}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => removeAsset(asset.id)}
-                              className="p-1 rounded-full text-white/60 hover:text-rose-300 hover:bg-white/10 transition-colors"
-                              aria-label="Remove asset"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <div>
-                            <label className="text-[11px] uppercase tracking-wide text-white/40 mb-1 block">
-                              Assign to section
-                            </label>
-                            <select
-                              value={asset.sectionId ?? ""}
-                              onChange={(e) => assignAssetToSection(asset.id, e.target.value)}
-                              className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/80 focus:border-white/50 outline-none"
-                            >
-                              <option value="">Unassigned</option>
-                              {sectionOptions.map((section) => (
-                                <option key={section.id} value={section.id}>
-                                  {section.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <button
-                            onClick={() => toggleFeaturedAsset(asset.id)}
-                            className={cn(
-                              "w-full flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors",
-                              asset.featured
-                                ? "border-amber-300/70 text-amber-200"
-                                : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"
-                            )}
-                          >
-                            <Star
-                              className="w-4 h-4"
-                              fill={asset.featured ? "currentColor" : "none"}
-                            />
-                            {asset.featured ? "Featured visual" : "Mark as featured"}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "layouts" && (
-                <div className="space-y-3 max-h-[430px] overflow-y-auto pr-1">
-                  {templateLibrary.map((template) => (
-                    <div
-                      key={template.id}
-                      className={cn(
-                        "rounded-2xl border p-4 space-y-3 transition-colors",
-                        selectedTemplateId === template.id
-                          ? "border-white/40 bg-white/10"
-                          : "border-white/10 bg-white/5"
-                      )}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="text-base font-semibold text-white">{template.name}</p>
-                          <p className="text-xs text-white/60 mt-1">{template.description}</p>
-                        </div>
-                        {template.badge && (
-                          <span className="rounded-full border border-white/20 px-2 py-0.5 text-[11px] uppercase tracking-wide text-white/80">
-                            {template.badge}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 text-[11px] uppercase text-white/50">
-                        {template.sections.map((section) => (
-                          <span
-                            key={`${template.id}-${section.id}`}
-                            className="rounded-full border border-white/15 px-2 py-0.5"
-                          >
-                            {section.name}
-                          </span>
-                        ))}
-                      </div>
-                      <button
-                        onClick={() => handleApplyTemplate(template.id)}
-                        className={cn(
-                          "w-full rounded-xl px-4 py-2 text-sm font-semibold transition-colors",
-                          selectedTemplateId === template.id
-                            ? "bg-white text-gray-900"
-                            : "border border-white/15 text-white/80 hover:border-white/40"
-                        )}
-                      >
-                        {selectedTemplateId === template.id ? "Template Active" : "Use Template"}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {activeTab === "animations" && (
-                <div className="space-y-5">
-                  <div>
-                    <p className="text-sm text-white/60 mb-2">Entrance preset</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {(["fade", "slide", "zoom"] as const).map((preset) => (
-                        <button
-                          key={preset}
-                          onClick={() => handleAnimationSettingChange("preset", preset)}
-                          className={cn(
-                            "rounded-xl border px-3 py-2 text-sm font-semibold capitalize transition-colors",
-                            animationSettings.preset === preset
-                              ? "bg-white text-gray-900"
-                              : "border-white/15 text-white/70 hover:border-white/40"
-                          )}
-                        >
-                          {preset}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-xs uppercase tracking-wide text-white/40">
-                      Duration ({animationSettings.duration.toFixed(1)}s)
-                    </label>
-                    <input
-                      type="range"
-                      min={0.3}
-                      max={1.2}
-                      step={0.1}
-                      value={animationSettings.duration}
-                      onChange={(e) =>
-                        handleAnimationSettingChange("duration", parseFloat(e.target.value))
-                      }
-                      className="w-full"
-                    />
-                    <label className="text-xs uppercase tracking-wide text-white/40">
-                      Stagger ({animationSettings.delay.toFixed(2)}s)
-                    </label>
-                    <input
-                      type="range"
-                      min={0}
-                      max={0.3}
-                      step={0.01}
-                      value={animationSettings.delay}
-                      onChange={(e) =>
-                        handleAnimationSettingChange("delay", parseFloat(e.target.value))
-                      }
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs uppercase tracking-wide text-white/40">
-                      Easing
-                    </label>
-                    <select
-                      value={animationSettings.easing}
-                      onChange={(e) =>
-                        handleAnimationSettingChange("easing", e.target.value as AnimationSettings["easing"])
-                      }
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
-                    >
-                      {easingOptions.map((easing) => (
-                        <option key={easing} value={easing}>
-                          {easing}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/40 mb-2">
-                      Live Preview
-                    </p>
-                    <motion.div
-                      variants={animationVariants[animationSettings.preset]}
-                      initial="initial"
-                      animate="animate"
-                      transition={{
-                        duration: animationSettings.duration,
-                        ease: animationSettings.easing,
-                        delay: animationSettings.delay,
-                      }}
-                      className="rounded-xl border border-white/10 bg-white/10 p-4 space-y-2"
-                    >
-                      <p className="text-sm font-semibold text-white">Motion feels ready</p>
-                      <p className="text-xs text-white/60">
-                        Sections will animate using this preset and timing on publish.
-                      </p>
-                    </motion.div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "seo" && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
-                      Meta Title
-                    </label>
-                    <input
-                      value={seoSettings.title}
-                      onChange={(e) => handleSeoFieldChange("title", e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
-                      Meta Description
-                    </label>
-                    <textarea
-                      value={seoSettings.description}
-                      onChange={(e) => handleSeoFieldChange("description", e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
-                      rows={3}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
-                      Portfolio Slug
-                    </label>
-                    <div className="flex items-center rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white/70">
-                      <span className="text-white/40 text-xs mr-2">modelink.com/</span>
-                      <input
-                        value={seoSettings.slug}
-                        onChange={(e) => handleSeoFieldChange("slug", e.target.value)}
-                        className="flex-1 bg-transparent text-white text-sm focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs uppercase tracking-wide text-white/40 mb-1 block">
-                      Keywords (comma separated)
-                    </label>
-                    <input
-                      value={keywordInputValue}
-                      onChange={(e) => handleKeywordInput(e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white focus:border-white/50 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs uppercase tracking-wide text-white/40">
-                        Open Graph image
-                      </p>
-                      <span className="text-[10px] text-white/40">
-                        Uses first media if none selected
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {mediaLibrary.slice(0, 4).map((asset) => (
-                        <button
-                          key={`og-${asset.id}`}
-                          onClick={() => handleSeoFieldChange("ogImage", asset.url)}
-                          className={cn(
-                            "relative h-20 rounded-2xl overflow-hidden border",
-                            seoSettings.ogImage === asset.url
-                              ? "border-white"
-                              : "border-white/15 hover:border-white/40"
-                          )}
-                        >
-                          <img
-                            src={asset.url}
-                            alt={asset.label}
-                            className="w-full h-full object-cover"
-                          />
-                          {seoSettings.ogImage === asset.url && (
-                            <Check className="absolute top-2 right-2 w-4 h-4 text-white drop-shadow" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-2">
-                    <p className="text-xs uppercase tracking-[0.4em] text-white/40">Preview</p>
-                    <div className="rounded-xl bg-white text-gray-900 p-3 space-y-1">
-                      <p className="text-xs text-gray-500">{publishSettings.previewUrl}</p>
-                      <p className="text-sm font-semibold">{seoSettings.title}</p>
-                      <p className="text-xs text-gray-600 line-clamp-2">{seoSettings.description}</p>
-                      <div className="text-[10px] uppercase tracking-wide text-emerald-600 mt-1">
-                        {seoSettings.keywords.slice(0, 3).join(" • ")}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "publish" && (
-                <div className="space-y-4">
-                  <div className="rounded-2xl border border-white/10 bg-[--bg-input] p-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs uppercase tracking-wide text-white/40">Status</p>
-                      <p className="text-sm font-semibold text-white">
-                        {publishSettings.isPublished ? "Live on modelink.com" : "Draft only"}
-                      </p>
-                      <p className="text-xs text-white/50">{lastPublishedLabel}</p>
-                    </div>
-                    <button
-                      onClick={handlePublishToggle}
-                      className={cn(
-                        "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                        publishSettings.isPublished
-                          ? "bg-white text-gray-900"
-                          : "border border-white/20 text-white hover:border-white/40"
-                      )}
-                    >
-                      {publishSettings.isPublished ? "Unpublish" : "Enable live"}
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="rounded-2xl border border-white/10 bg-[--bg-input] p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-white/40">Share link</p>
-                          <p className="text-sm text-white">{publishSettings.shareUrl}</p>
-                        </div>
-                        <button
-                          onClick={() => void handleCopyShareUrl()}
-                          className="inline-flex items-center gap-1 rounded-full border border-white/20 px-3 py-1 text-xs text-white/80 hover:border-white/40 transition-colors"
-                        >
-                          <Link2 className="w-3 h-3" />
-                          {copySuccess ? "Copied" : "Copy"}
-                        </button>
-                      </div>
-                      <p className="text-xs text-white/50">
-                        Share this preview with clients or collaborators before publishing.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl border border-white/10 bg-[--bg-input] p-4">
-                      <p className="text-xs uppercase tracking-wide text-white/40">Version</p>
-                      <p className="text-sm font-semibold text-white">{publishSettings.version}</p>
-                      <p className="text-xs text-white/50">
-                        {publishSettings.lastPublishedAt ? "Last shipped" : "Not live yet"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    <button
-                      onClick={handlePreviewClick}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 hover:border-white/40 transition-colors"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Open preview
-                    </button>
-                    <button
-                      onClick={handlePublish}
-                      disabled={isPublishing}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-white text-gray-900 px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60"
-                    >
-                      <Rocket className="w-4 h-4" />
-                      {isPublishing ? "Publishing..." : "Publish to web"}
-                    </button>
-                  </div>
-                </div>
-              )}
+              {renderTabContent(activeTab)}
             </div>
           </motion.div>
 
-          {/* Preview Panel */}
+          {/* Preview Panel - Full width on mobile */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="flex-1 mt-[3.25rem]"
+            className="flex-1 min-w-0 lg:mt-[3.25rem]"
           >
             <div className="bg-transparent border border-white/[0.06] rounded-2xl overflow-hidden">
               {/* Browser Frame */}
               <div className="flex items-center gap-2 px-4 py-3 bg-[--bg-input] border-b border-white/[0.06]">
                 <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-rose-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
+                  <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-rose-500/50" />
+                  <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-amber-500/50" />
+                  <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-emerald-500/50" />
                 </div>
-                <div className="flex-1 mx-8">
-                  <div className="bg-white/5 rounded-lg px-4 py-1.5 text-sm text-white/40 text-center">
+                <div className="flex-1 mx-4 lg:mx-8">
+                  <div className="bg-white/5 rounded-lg px-3 lg:px-4 py-1.5 text-xs lg:text-sm text-white/40 text-center truncate">
                     modelink.com/aria-chen
                   </div>
                 </div>
@@ -1067,7 +1226,7 @@ export function PortfolioEditor() {
 
               {/* Preview Content */}
               <div
-                className="p-8 min-h-[500px]"
+                className="p-4 lg:p-8 min-h-[400px] lg:min-h-[500px]"
                 style={{
                   background: `linear-gradient(135deg, ${customColors.primary}15, ${customColors.secondary}15)`,
                 }}
@@ -1077,13 +1236,13 @@ export function PortfolioEditor() {
                   .map((section) => (
                     <div
                       key={section.id}
-                      className="mb-6 p-6 rounded-2xl bg-white/5 border border-white/10"
+                      className="mb-4 lg:mb-6 p-4 lg:p-6 rounded-2xl bg-white/5 border border-white/10"
                     >
-                      <p className="text-white/60 text-sm uppercase tracking-wider">
+                      <p className="text-white/60 text-xs lg:text-sm uppercase tracking-wider">
                         {section.name}
                       </p>
-                      <div className="mt-4 h-20 rounded-xl bg-white/5 flex items-center justify-center">
-                        <span className="text-white/30 text-sm">
+                      <div className="mt-3 lg:mt-4 h-16 lg:h-20 rounded-xl bg-white/5 flex items-center justify-center">
+                        <span className="text-white/30 text-xs lg:text-sm">
                           Preview Content
                         </span>
                       </div>
@@ -1094,7 +1253,9 @@ export function PortfolioEditor() {
           </motion.div>
         </div>
       </div>
+
+      {/* Mobile Floating Toolkit */}
+      {mobileToolkitPortal}
     </div>
   );
 }
-

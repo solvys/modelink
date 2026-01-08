@@ -18,24 +18,24 @@ function Customize() {
   );
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-white overflow-hidden">
+    <div className="relative min-h-screen bg-slate-950 text-white overflow-x-hidden">
       <LiquidBackdrop />
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/60 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+        <div className="w-full max-w-[764px] lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
               <ArrowLeft className="w-5 h-5" />
-              <span>Back to Site</span>
+              <span className="hidden sm:inline">Back to Site</span>
             </Link>
-            <h1 className="text-xl font-bold text-white">Customization Panel</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-white">Customization Panel</h1>
             {defaultAgency?.logo && (
-              <img src={defaultAgency.logo} alt={defaultAgency.name} className="h-10 w-10 rounded-lg object-cover" />
+              <img src={defaultAgency.logo} alt={defaultAgency.name} className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg object-cover" />
             )}
           </div>
         </div>
       </header>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="relative z-10 w-full max-w-[764px] lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <CustomizationPanel customization={customization} onUpdate={setCustomization} />
       </main>
     </div>

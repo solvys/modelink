@@ -8,12 +8,12 @@ function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
-    <>
+    <div className="min-h-screen overflow-x-hidden">
       <LiquidBackdrop />
       <PillNavbar onSettingsClick={() => setSettingsOpen(true)} />
       <PersonalDashboard lookbookMode onSettingsClick={() => setSettingsOpen(true)} />
       <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </>
+    </div>
   );
 }
 
