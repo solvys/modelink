@@ -100,7 +100,7 @@
 
 /* Pill navbar light theme */
 .light-theme nav .bg-white {
-  background-color: rgba(140, 128, 93, 1) !important;
+  background-color: var(--accent-primary) !important;
   color: #fff !important;
 }
 
@@ -111,11 +111,70 @@
 /* Navbar background in light theme - darker tan shade */
 .light-theme nav,
 .light-theme .bg-gray-950\/95 {
-  background-color: rgba(160, 148, 113, 0.95) !important;
+  background-color: rgba(140, 128, 93, 0.95) !important;
 }
 
-.light-theme nav .backdrop-blur-2xl {
-  background-color: rgba(160, 148, 113, 0.92) !important;
+.light-theme nav .backdrop-blur-2xl,
+.light-theme nav .backdrop-blur-xl {
+  background-color: rgba(140, 128, 93, 0.92) !important;
+}
+
+/* Sidebar and settings buttons in light theme - darker tan shade */
+.light-theme button[class*="bg-black"],
+.light-theme [class*="sidebar"] button,
+.light-theme .fixed button:not(nav button) {
+  background-color: rgba(140, 128, 93, 1) !important;
+  border-color: rgba(100, 88, 63, 0.3) !important;
+}
+
+.light-theme button[class*="bg-black"]:hover,
+.light-theme [class*="sidebar"] button:hover,
+.light-theme .fixed button:not(nav button):hover {
+  background-color: rgba(120, 108, 73, 1) !important;
+}
+
+/* Settings panel and floating buttons */
+.light-theme [class*="settings"],
+.light-theme .fixed > div[class*="bg-"] {
+  background-color: rgba(160, 148, 113, 0.98) !important;
+}
+
+/* Mobile menu button and panel */
+.light-theme button[class*="bottom-6"],
+.light-theme div[class*="bottom-24"] {
+  background-color: rgba(140, 128, 93, 1) !important;
+  border-color: rgba(100, 88, 63, 0.3) !important;
+}
+
+/* Sidebar panel background - darker tan */
+.light-theme .bg-black\/60,
+.light-theme .bg-black\/70,
+.light-theme .bg-black\/80 {
+  background-color: rgba(140, 128, 93, 0.95) !important;
+}
+
+/* Sidebar toggle button */
+.light-theme .bg-white\/\[0\.08\],
+.light-theme .bg-white\/\[0\.03\] {
+  background-color: rgba(140, 128, 93, 0.9) !important;
+}
+
+.light-theme .hover\:bg-white\/15:hover {
+  background-color: rgba(120, 108, 73, 1) !important;
+}
+
+/* Quick settings button */
+.light-theme button[aria-label="Quick settings"],
+.light-theme button[aria-label="Open menu"],
+.light-theme button[aria-label="Close menu"] {
+  background-color: rgba(140, 128, 93, 1) !important;
+  border-color: rgba(100, 88, 63, 0.3) !important;
+}
+
+.light-theme button[aria-label="Quick settings"]:hover,
+.light-theme button[aria-label="Open menu"]:hover,
+.light-theme button[aria-label="Close menu"]:hover {
+  background-color: rgba(120, 108, 73, 1) !important;
 }
 
 /* Card borders in light theme */
