@@ -284,10 +284,10 @@ export function CreatorHubContent() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="w-full max-w-[764px] lg:max-w-5xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col xl:flex-row gap-8">
           {/* Main Content */}
-          <div className="flex-1 max-w-4xl space-y-8">
+          <div className="flex-1 w-full space-y-8 xl:max-w-4xl">
             {/* Welcome Header */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
