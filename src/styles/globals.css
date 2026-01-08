@@ -20,15 +20,15 @@
 }
 
 .light-theme {
-  --bg-base: #f5f5f0;
-  --bg-card: rgba(240, 238, 230, 0.8);
-  --bg-elevated: rgba(235, 233, 225, 0.95);
-  --bg-input: #e8e6de;
-  --border-subtle: rgba(42, 16, 65, 0.18);
-  --border-muted: rgba(42, 16, 65, 0.28);
+  --bg-base: #FFE9C2;
+  --bg-card: transparent;
+  --bg-elevated: transparent;
+  --bg-input: rgba(42, 16, 65, 0.08);
+  --border-subtle: rgba(42, 16, 65, 0.15);
+  --border-muted: rgba(42, 16, 65, 0.22);
   --text-primary: #2a1041;
   --text-secondary: rgba(42, 16, 65, 0.85);
-  --text-muted: rgba(42, 16, 65, 0.65);
+  --text-muted: rgba(42, 16, 65, 0.55);
   --accent-primary: #3a0f5d;
   --accent-secondary: #6b2e8f;
   --connected-bg: rgba(16, 185, 129, 0.9);
@@ -57,13 +57,13 @@
 .light-theme .bg-black\/70,
 .light-theme .bg-black\/80,
 .light-theme .bg-black\/60 {
-  background-color: var(--bg-elevated) !important;
+  background-color: transparent !important;
 }
 
 .light-theme .bg-gray-950,
 .light-theme .bg-gray-950\/95,
 .light-theme .bg-gray-900 {
-  background-color: var(--bg-card) !important;
+  background-color: transparent !important;
 }
 
 .light-theme .border-white\/10,
@@ -79,13 +79,13 @@
 .light-theme .bg-white\/5,
 .light-theme .bg-white\/10,
 .light-theme .bg-white\/15 {
-  background-color: rgba(42, 16, 65, 0.06) !important;
+  background-color: transparent !important;
 }
 
 .light-theme .hover\:bg-white\/10:hover,
 .light-theme .hover\:bg-white\/15:hover,
 .light-theme .hover\:bg-white\/5:hover {
-  background-color: rgba(42, 16, 65, 0.1) !important;
+  background-color: rgba(42, 16, 65, 0.04) !important;
 }
 
 .light-theme .backdrop-blur-2xl,
@@ -112,73 +112,73 @@
   color: #fff !important;
 }
 
-/* Navbar background in light theme */
+/* Navbar background in light theme - transparent */
 .light-theme nav,
 .light-theme .bg-gray-950\/95 {
-  background-color: rgba(225, 223, 215, 0.95) !important;
+  background-color: transparent !important;
 }
 
 .light-theme nav .backdrop-blur-2xl,
 .light-theme nav .backdrop-blur-xl {
-  background-color: rgba(225, 223, 215, 0.92) !important;
+  background-color: transparent !important;
 }
 
-/* Sidebar and settings buttons in light theme */
+/* Sidebar and settings buttons in light theme - transparent */
 .light-theme button[class*="bg-black"],
 .light-theme [class*="sidebar"] button,
 .light-theme .fixed button:not(nav button) {
-  background-color: rgba(215, 213, 205, 1) !important;
-  border-color: rgba(180, 175, 165, 0.5) !important;
+  background-color: transparent !important;
+  border-color: var(--border-subtle) !important;
 }
 
 .light-theme button[class*="bg-black"]:hover,
 .light-theme [class*="sidebar"] button:hover,
 .light-theme .fixed button:not(nav button):hover {
-  background-color: rgba(200, 198, 190, 1) !important;
+  background-color: rgba(42, 16, 65, 0.05) !important;
 }
 
-/* Settings panel and floating buttons */
+/* Settings panel and floating buttons - transparent */
 .light-theme [class*="settings"],
 .light-theme .fixed > div[class*="bg-"] {
-  background-color: rgba(240, 238, 230, 0.98) !important;
+  background-color: rgba(255, 233, 194, 0.95) !important;
 }
 
-/* Mobile menu button and panel */
+/* Mobile menu button and panel - transparent */
 .light-theme button[class*="bottom-6"],
 .light-theme div[class*="bottom-24"] {
-  background-color: rgba(215, 213, 205, 1) !important;
-  border-color: rgba(180, 175, 165, 0.5) !important;
+  background-color: rgba(255, 233, 194, 0.95) !important;
+  border-color: var(--border-muted) !important;
 }
 
-/* Sidebar panel background */
+/* Sidebar panel background - transparent */
 .light-theme .bg-black\/60,
 .light-theme .bg-black\/70,
 .light-theme .bg-black\/80 {
-  background-color: rgba(235, 233, 225, 0.95) !important;
+  background-color: transparent !important;
 }
 
-/* Sidebar toggle button */
+/* Sidebar toggle button - transparent */
 .light-theme .bg-white\/\[0\.08\],
 .light-theme .bg-white\/\[0\.03\] {
-  background-color: rgba(225, 223, 215, 0.9) !important;
+  background-color: transparent !important;
 }
 
 .light-theme .hover\:bg-white\/15:hover {
-  background-color: rgba(210, 208, 200, 1) !important;
+  background-color: rgba(42, 16, 65, 0.05) !important;
 }
 
-/* Quick settings button */
+/* Quick settings button - transparent */
 .light-theme button[aria-label="Quick settings"],
 .light-theme button[aria-label="Open menu"],
 .light-theme button[aria-label="Close menu"] {
-  background-color: rgba(215, 213, 205, 1) !important;
-  border-color: rgba(180, 175, 165, 0.5) !important;
+  background-color: transparent !important;
+  border-color: var(--border-subtle) !important;
 }
 
 .light-theme button[aria-label="Quick settings"]:hover,
 .light-theme button[aria-label="Open menu"]:hover,
 .light-theme button[aria-label="Close menu"]:hover {
-  background-color: rgba(200, 198, 190, 1) !important;
+  background-color: rgba(42, 16, 65, 0.05) !important;
 }
 
 /* Card borders in light theme */
@@ -225,29 +225,29 @@
   color: #2563eb !important;
 }
 
-/* Gradient backgrounds in light theme */
+/* Gradient backgrounds in light theme - very subtle */
 .light-theme .from-violet-500\/20,
 .light-theme .from-violet-500\/30 {
-  --tw-gradient-from: rgba(58, 15, 93, 0.15) !important;
+  --tw-gradient-from: rgba(58, 15, 93, 0.06) !important;
 }
 
 .light-theme .to-blue-500\/20,
 .light-theme .to-blue-500\/30 {
-  --tw-gradient-to: rgba(107, 46, 143, 0.15) !important;
+  --tw-gradient-to: rgba(107, 46, 143, 0.06) !important;
 }
 
 .light-theme .from-violet-500\/5 {
-  --tw-gradient-from: rgba(58, 15, 93, 0.08) !important;
+  --tw-gradient-from: rgba(58, 15, 93, 0.03) !important;
 }
 
 .light-theme .to-blue-500\/5 {
-  --tw-gradient-to: rgba(107, 46, 143, 0.08) !important;
+  --tw-gradient-to: rgba(107, 46, 143, 0.03) !important;
 }
 
-/* Background blur effects in light theme */
+/* Background blur effects in light theme - very subtle */
 .light-theme .bg-violet-500\/5,
 .light-theme .bg-blue-500\/5 {
-  background-color: rgba(107, 46, 143, 0.08) !important;
+  background-color: rgba(107, 46, 143, 0.03) !important;
 }
 
 /* Shadows in light theme */
@@ -255,10 +255,10 @@
   --tw-shadow-color: rgba(107, 46, 143, 0.12) !important;
 }
 
-/* Input fields in light theme */
+/* Input fields in light theme - ONLY elements with backgrounds */
 .light-theme input,
 .light-theme textarea {
-  background-color: var(--bg-input) !important;
+  background-color: rgba(42, 16, 65, 0.06) !important;
   color: var(--text-primary) !important;
   border-color: var(--border-muted) !important;
 }
@@ -271,6 +271,13 @@
 .light-theme input:focus,
 .light-theme textarea:focus {
   border-color: var(--accent-primary) !important;
+  background-color: rgba(42, 16, 65, 0.08) !important;
+}
+
+/* Post button in light theme */
+.light-theme .bg-white.text-gray-900 {
+  background-color: var(--accent-primary) !important;
+  color: #fff !important;
 }
 
 @layer base {
@@ -283,6 +290,7 @@
     @apply antialiased;
     font-family: "Cormorant Garamond", serif;
     font-style: italic;
+    font-weight: 600;
     background-color: var(--bg-base);
     color: var(--text-primary);
     overflow-x: hidden;
@@ -291,10 +299,11 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Body text - Cormorant Garamond Italic */
+  /* Body text - Cormorant Garamond Italic Semibold for legibility */
   p, span, a, button, input, textarea, label, div {
     font-family: "Cormorant Garamond", serif;
     font-style: italic;
+    font-weight: 600;
   }
 
   /* Headers - Cormorant Garamond Bold Italic */
