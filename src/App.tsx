@@ -13,6 +13,7 @@ import BrandProfile from "./pages/BrandProfile";
 import Linda from "./pages/Linda";
 import { QuickSettingsPanel } from "./components/QuickSettingsPanel";
 import { PageTransition } from "./components/PageTransition";
+import { FloatingCustomizationToolkit } from "./components/FloatingCustomizationToolkit";
 
 function App() {
   const location = useLocation();
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
       <QuickSettingsPanel />
+      <FloatingCustomizationToolkit />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* Creator Hub - Main landing page */}
