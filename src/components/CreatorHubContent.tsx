@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Eye,
@@ -11,12 +11,16 @@ import {
   TrendingDown,
   ChevronRight,
   Sparkles,
+  StickyNote,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Inbox } from "./Inbox";
 import { Notepad } from "./Notepad";
 import { dashboardData } from "@/data/mockDashboard";
 import { mockModels } from "@/data/mockModels";
+
+const NOTE_STORAGE_KEY = "modelink-notepad";
 
 interface KPICardProps {
   label: string;
@@ -25,9 +29,18 @@ interface KPICardProps {
   meta?: string;
   icon: React.ReactNode;
   delay?: number;
+  isActive?: boolean;
 }
 
-function KPICard({ label, value, change, meta, icon, delay = 0 }: KPICardProps) {
+function KPICard({
+  label,
+  value,
+  change,
+  meta,
+  icon,
+  delay = 0,
+  isActive = false,
+}: KPICardProps) {
   const isPositive = change && change >= 0;
 
   return (
@@ -35,7 +48,10 @@ function KPICard({ label, value, change, meta, icon, delay = 0 }: KPICardProps) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="bg-transparent border border-white/[0.06] rounded-2xl p-5 hover:bg-white/[0.05] transition-colors"
+      className={cn(
+        "bg-transparent border border-white/[0.06] rounded-2xl p-5 hover:bg-white/[0.05] transition-colors",
+        isActive && "border-white/30 bg-white/[0.07] shadow-lg shadow-violet-500/20"
+      )}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="p-2.5 rounded-xl bg-white/[0.05] text-white/60">
@@ -70,9 +86,94 @@ function KPICard({ label, value, change, meta, icon, delay = 0 }: KPICardProps) 
   );
 }
 
+function MobileQuickNotes() {
+  const [content, setContent] = useState("");
+  const [isSaved, setIsSaved] = useState(true);
+  const [showSaved, setShowSaved] = useState(false);
+  const hideSavedRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem(NOTE_STORAGE_KEY);
+    if (stored) {
+      setContent(stored);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isSaved) return;
+    const saveTimeout = window.setTimeout(() => {
+      localStorage.setItem(NOTE_STORAGE_KEY, content);
+      setIsSaved(true);
+      setShowSaved(true);
+      if (hideSavedRef.current) {
+        window.clearTimeout(hideSavedRef.current);
+      }
+      hideSavedRef.current = window.setTimeout(() => setShowSaved(false), 1500);
+    }, 600);
+
+    return () => window.clearTimeout(saveTimeout);
+  }, [content, isSaved]);
+
+  useEffect(() => {
+    return () => {
+      if (hideSavedRef.current) {
+        window.clearTimeout(hideSavedRef.current);
+      }
+    };
+  }, []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(event.target.value);
+    setIsSaved(false);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+      className="xl:hidden border border-white/[0.06] rounded-2xl p-5 bg-white/[0.02]"
+    >
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex items-center gap-2">
+          <StickyNote className="w-4 h-4 text-amber-300" />
+          <div>
+            <h3 className="text-base font-semibold text-white">Quick Notes</h3>
+            <p className="text-xs text-white/50">Capture sparks while on the go.</p>
+          </div>
+        </div>
+        {showSaved && (
+          <div className="flex items-center gap-1 text-xs text-emerald-300">
+            <Check className="w-3 h-3" />
+            Saved
+          </div>
+        )}
+      </div>
+      <textarea
+        value={content}
+        onChange={handleChange}
+        rows={4}
+        placeholder="Draft a reminder, idea, or caption..."
+        className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors"
+      />
+      <div className="mt-2 flex items-center justify-between text-[11px] text-white/40">
+        <span>{content.length} characters</span>
+        <span className={cn(!isSaved && "text-amber-300")}>
+          {isSaved ? "Synced" : "Saving..."}
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
 export function CreatorHubContent() {
   const model = mockModels[0];
   const { topPosts, appointments } = dashboardData;
+  const kpiRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const seenKPIRef = useRef<Set<number>>(new Set());
+  const timersRef = useRef<number[]>([]);
+  const [activeKPIs, setActiveKPIs] = useState<Set<number>>(new Set());
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("en-US", {
@@ -136,6 +237,45 @@ export function CreatorHubContent() {
     },
   ];
 
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") {
+      return;
+    }
+    const observers = kpiRefs.current.map((node, index) => {
+      if (!node) return null;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !seenKPIRef.current.has(index)) {
+              seenKPIRef.current.add(index);
+              setActiveKPIs((prev) => {
+                const next = new Set(prev);
+                next.add(index);
+                return next;
+              });
+              const timeoutId = window.setTimeout(() => {
+                setActiveKPIs((prev) => {
+                  const next = new Set(prev);
+                  next.delete(index);
+                  return next;
+                });
+              }, 1200);
+              timersRef.current.push(timeoutId);
+            }
+          });
+        },
+        { threshold: 0.65 }
+      );
+      observer.observe(node);
+      return observer;
+    });
+
+    return () => {
+      observers.forEach((observer) => observer?.disconnect());
+      timersRef.current.forEach((timerId) => window.clearTimeout(timerId));
+    };
+  }, []);
+
   return (
     <div className="relative min-h-full pt-28 pb-12">
       {/* Subtle Background */}
@@ -145,7 +285,7 @@ export function CreatorHubContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex gap-8">
+        <div className="flex flex-col xl:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1 max-w-4xl space-y-8">
             {/* Welcome Header */}
@@ -167,15 +307,25 @@ export function CreatorHubContent() {
             </motion.div>
 
             {/* KPI Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {kpis.map((kpi, i) => (
-                <KPICard key={kpi.label} {...kpi} delay={0.1 + i * 0.05} />
+                <div
+                  key={kpi.label}
+                  ref={(el) => {
+                    kpiRefs.current[i] = el;
+                  }}
+                >
+                  <KPICard
+                    {...kpi}
+                    delay={0.1 + i * 0.05}
+                    isActive={activeKPIs.has(i)}
+                  />
+                </div>
               ))}
             </div>
 
-            {/* Two Column Layout */}
-            <div className="grid lg:grid-cols-2 gap-6">
-              {/* Inbox */}
+            {/* Inbox & Upcoming */}
+            <div className="grid gap-6 lg:grid-cols-2">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -184,7 +334,6 @@ export function CreatorHubContent() {
                 <Inbox />
               </motion.div>
 
-              {/* Upcoming Appointments */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -230,6 +379,9 @@ export function CreatorHubContent() {
                 </div>
               </motion.div>
             </div>
+
+            {/* Quick Notes - Mobile */}
+            <MobileQuickNotes />
 
             {/* Top Performing Posts */}
             <motion.div

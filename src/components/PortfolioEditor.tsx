@@ -1048,7 +1048,7 @@ export function PortfolioEditor() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="flex-1"
+            className="flex-1 mt-[3.25rem]"
           >
             <div className="bg-transparent border border-white/[0.06] rounded-2xl overflow-hidden">
               {/* Browser Frame */}

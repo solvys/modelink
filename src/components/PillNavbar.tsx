@@ -58,7 +58,7 @@ export function PillNavbar({ onSettingsClick }: PillNavbarProps) {
 
   return (
     <motion.nav
-      className="fixed top-[21px] right-0 z-50 flex justify-center px-4 pointer-events-none"
+      className="hidden lg:flex fixed top-[21px] right-0 z-50 w-full justify-center px-4 pointer-events-none"
       style={{ left: offset }}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
