@@ -18,17 +18,17 @@
 }
 
 .light-theme {
-  --bg-base: #fafafa;
-  --bg-card: transparent;
-  --bg-elevated: transparent;
-  --bg-input: #e5e5e5;
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-muted: rgba(0, 0, 0, 0.12);
-  --text-primary: #1a1a1a;
-  --text-secondary: rgba(0, 0, 0, 0.7);
-  --text-muted: rgba(0, 0, 0, 0.5);
-  --accent-primary: #7c3aed;
-  --accent-secondary: #2563eb;
+  --bg-base: #f7f1e1;
+  --bg-card: #fff9ed;
+  --bg-elevated: #f4ead4;
+  --bg-input: #e6d7b7;
+  --border-subtle: rgba(42, 16, 65, 0.08);
+  --border-muted: rgba(42, 16, 65, 0.18);
+  --text-primary: #2a1041;
+  --text-secondary: rgba(42, 16, 65, 0.78);
+  --text-muted: rgba(42, 16, 65, 0.55);
+  --accent-primary: #3a0f5d;
+  --accent-secondary: #6b2e8f;
 }
 
 @layer base {
