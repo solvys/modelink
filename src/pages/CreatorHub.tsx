@@ -20,7 +20,7 @@ function CreatorHub() {
         style={sidebarPaddingStyle}
       >
         <PillNavbar onSettingsClick={() => setSettingsOpen(true)} />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           <CreatorHubContent />
         </main>
         <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />

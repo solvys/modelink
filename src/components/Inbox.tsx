@@ -87,7 +87,7 @@ export function Inbox() {
   };
 
   return (
-    <div className="bg-transparent border border-white/[0.06] rounded-2xl p-5 h-full">
+    <div className="bg-transparent border border-white/[0.06] rounded-2xl p-5 h-full w-full min-w-0">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
