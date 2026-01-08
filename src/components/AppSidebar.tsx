@@ -12,9 +12,12 @@ import {
   X,
   Sparkles,
   ChevronDown,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { creatorHubNavLinks } from "@/data/navigation";
 
 const CREATOR_HUB_EXPANDED_KEY = "modelink-creator-hub-expanded";
@@ -41,6 +44,7 @@ const navItems = [
 export function AppSidebar() {
   const location = useLocation();
   const { collapsed, toggleCollapsed } = useSidebar();
+  const { theme, toggleTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [creatorHubExpanded, setCreatorHubExpanded] = useState(() => {
     if (typeof window !== "undefined") {
@@ -146,7 +150,7 @@ export function AppSidebar() {
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                {navItems.map((item) => {
+                {navItems.filter(item => item.label !== "Settings").map((item) => {
                   const hasChildren = Boolean(item.children?.length);
                   const active = hasChildren
                     ? item.children!.some((child) => isRouteActive(child.href))
@@ -227,6 +231,53 @@ export function AppSidebar() {
                     </div>
                   );
                 })}
+                
+                {/* Settings & Theme Toggle - Split Row */}
+                <div className="flex gap-2">
+                  <Link
+                    to="/settings"
+                    onClick={handleNavClick}
+                    className="flex-1 flex items-center gap-2 rounded-2xl border px-3.5 py-2.5 text-sm transition-colors"
+                    style={{
+                      borderColor: isRouteActive("/settings") ? "var(--border-muted)" : "var(--border-subtle)",
+                      backgroundColor: isRouteActive("/settings") ? "rgba(107, 46, 143, 0.1)" : "transparent",
+                      color: isRouteActive("/settings") ? "var(--text-primary)" : "var(--text-secondary)",
+                    }}
+                  >
+                    <div
+                      className="p-1.5 rounded-xl"
+                      style={{
+                        backgroundColor: isRouteActive("/settings") ? "rgba(107, 46, 143, 0.15)" : "rgba(107, 46, 143, 0.05)",
+                        color: isRouteActive("/settings") ? "var(--text-primary)" : "var(--text-secondary)",
+                      }}
+                    >
+                      <Settings className="w-4 h-4" />
+                    </div>
+                    Settings
+                  </Link>
+                  <button
+                    onClick={toggleTheme}
+                    aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-2xl border px-3.5 py-2.5 text-sm transition-colors"
+                    style={{
+                      borderColor: "var(--border-subtle)",
+                      backgroundColor: theme === "light" ? "rgba(245, 158, 11, 0.15)" : "rgba(99, 102, 241, 0.15)",
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    {theme === "dark" ? (
+                      <>
+                        <Sun className="w-4 h-4" />
+                        Light
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="w-4 h-4" />
+                        Dark
+                      </>
+                    )}
+                  </button>
+                </div>
                 <div 
                   className="pt-3"
                   style={{ borderTop: "1px solid var(--border-subtle)" }}
