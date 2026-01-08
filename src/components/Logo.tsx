@@ -27,14 +27,10 @@ export function Logo({ className, size = "md", showText = false }: LogoProps) {
           sizeClasses[size],
           "w-auto object-contain",
         )}
-        style={theme === "dark" ? {
-          // Dark theme: invert colors so black becomes white, use screen blend to hide white bg
-          filter: "invert(1)",
-          mixBlendMode: "screen",
-        } : {
-          // Light theme: multiply blend makes white transparent, darken for better contrast
-          filter: "contrast(1.2)",
-          mixBlendMode: "multiply",
+        style={{
+          // Dark theme: invert to make black lines white
+          // Light theme: keep original dark lines
+          filter: theme === "dark" ? "invert(1)" : "none",
         }}
       />
       {showText && (
