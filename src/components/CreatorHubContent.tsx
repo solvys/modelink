@@ -133,7 +133,7 @@ function MobileQuickNotes() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.35 }}
-      className="xl:hidden border border-white/[0.06] rounded-2xl p-5 bg-white/[0.02]"
+      className="xl:hidden border border-white/[0.06] rounded-2xl p-5 bg-white/[0.02] w-full"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2">
@@ -325,11 +325,12 @@ export function CreatorHubContent() {
             </div>
 
             {/* Inbox & Upcoming */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
+                className="min-w-0"
               >
                 <Inbox />
               </motion.div>
@@ -338,7 +339,7 @@ export function CreatorHubContent() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
-                className="bg-transparent border border-white/[0.06] rounded-2xl p-5"
+                className="min-w-0 bg-transparent border border-white/[0.06] rounded-2xl p-5"
               >
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white">
