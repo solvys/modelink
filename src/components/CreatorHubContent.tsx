@@ -318,7 +318,7 @@ export function CreatorHubContent() {
   }, []);
 
   return (
-    <div className="relative min-h-full pt-28 pb-12">
+    <div className="relative min-h-full pt-20 sm:pt-28 pb-12">
       {/* Subtle Background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-[120px]" />
@@ -326,6 +326,15 @@ export function CreatorHubContent() {
       </div>
 
       <div className="w-full max-w-[764px] lg:max-w-5xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Mobile App Title */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="sm:hidden text-center mb-6"
+        >
+          <h1 className="text-2xl font-bold text-white tracking-wide">ModelLink</h1>
+        </motion.div>
+
         <div className="flex flex-col xl:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1 w-full space-y-8 xl:max-w-4xl">
