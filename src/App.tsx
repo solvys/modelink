@@ -14,12 +14,14 @@ import Linda from "./pages/Linda";
 import { QuickSettingsPanel } from "./components/QuickSettingsPanel";
 import { PageTransition } from "./components/PageTransition";
 import { FloatingCustomizationToolkit } from "./components/FloatingCustomizationToolkit";
+import { MobileHeaderLogo } from "./components/Logo";
 
 function App() {
   const location = useLocation();
 
   return (
     <>
+      <MobileHeaderLogo />
       <QuickSettingsPanel />
       <FloatingCustomizationToolkit />
       <AnimatePresence mode="wait">

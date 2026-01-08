@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { creatorHubNavLinks } from "@/data/navigation";
+import { Logo } from "./Logo";
 
 const CREATOR_HUB_EXPANDED_KEY = "modelink-creator-hub-expanded";
 
@@ -126,20 +127,17 @@ export function AppSidebar() {
                   boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
                 }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p 
-                      className="text-[10px] uppercase tracking-[0.35em]"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      Menu
-                    </p>
-                    <p
-                      className="text-lg font-serif"
-                      style={{ fontFamily: '"Playfair Display", serif', color: "var(--text-primary)" }}
-                    >
-                      ModelLink
-                    </p>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Logo size="sm" />
+                    <div>
+                      <p 
+                        className="text-[10px] uppercase tracking-[0.35em]"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        Menu
+                      </p>
+                    </div>
                   </div>
                   <button
                     onClick={toggleCollapsed}

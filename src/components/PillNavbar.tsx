@@ -20,6 +20,7 @@ import { mockNotifications } from "@/data/mockNotifications";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { NotificationsPanel } from "./NotificationsPanel";
+import { Logo } from "./Logo";
 
 interface PillNavbarProps {
   onSettingsClick?: () => void;
@@ -75,19 +76,8 @@ export function PillNavbar({ onSettingsClick }: PillNavbarProps) {
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
       >
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 px-3">
-          <span
-            className="font-serif font-semibold text-white text-base hidden sm:block"
-            style={{ fontFamily: '"Playfair Display", serif', fontStyle: "normal" }}
-          >
-            ModelLink
-          </span>
-          <span
-            className="font-serif font-semibold text-white text-base sm:hidden"
-            style={{ fontFamily: '"Playfair Display", serif', fontStyle: "normal" }}
-          >
-            ML
-          </span>
+        <Link to="/" className="flex items-center px-3">
+          <Logo size="sm" />
         </Link>
 
         {/* Desktop Nav */}

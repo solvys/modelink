@@ -326,15 +326,6 @@ export function CreatorHubContent() {
       </div>
 
       <div className="w-full max-w-[764px] lg:max-w-5xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Mobile App Title */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="sm:hidden text-center mb-6"
-        >
-          <h1 className="text-2xl font-bold text-white tracking-wide">ModelLink</h1>
-        </motion.div>
-
         <div className="flex flex-col xl:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1 w-full space-y-8 xl:max-w-4xl">
